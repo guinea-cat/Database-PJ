@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class TicketService {
@@ -38,6 +39,9 @@ public class TicketService {
     private static final int TICKET_REWARD_POINTS = 100;
     private static final int VIP_THRESHOLD = 1000;
     private static final BigDecimal VIP_DISCOUNT = new BigDecimal("0.90");
+    private static final int PASSENGER_NAME_MIN_LENGTH = 2;
+    private static final int PASSENGER_NAME_MAX_LENGTH = 50;
+    private static final Pattern PASSENGER_ID_NUMBER_PATTERN = Pattern.compile("^[1-9]\\d{5}(18|19|20)\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\\d|3[01])\\d{3}[0-9Xx]$");
 
     private final UserRepository userRepository;
     private final FlightRepository flightRepository;
@@ -62,6 +66,9 @@ public class TicketService {
 
     @Transactional
     public TicketSale createTicket(CreateTicketRequest request) {
+        String passengerName = normalizePassengerName(request.passengerName);
+        String passengerIdNumber = normalizePassengerIdNumber(request.passengerIdNumber);
+
         User user = userRepository.findById(request.userId)
                 .orElseThrow(() -> new BusinessException(40401, "用户不存在"));
         Flight flight = flightRepository.findById(request.flightId)
@@ -81,8 +88,8 @@ public class TicketService {
         ticket.segment = segment;
         ticket.cabinClass = cabinClass;
         ticket.ticketStatus = TicketStatus.PENDING_PAYMENT;
-        ticket.passengerName = request.passengerName;
-        ticket.passengerIdNumberDigest = SecurityUtil.sha256Digest(firstNonBlank(request.passengerIdNumber, request.passengerIdNumberDigest));
+        ticket.passengerName = passengerName;
+        ticket.passengerIdNumberDigest = SecurityUtil.sha256Digest(passengerIdNumber);
         ticket.priceAmount = price;
         ticket.paymentAmount = effectivePayment(price, user.memberLevel);
         ticket.bookedAt = LocalDateTime.now();
@@ -257,10 +264,10 @@ public class TicketService {
             throw new BusinessException(41001, "航班已停用，无法继续操作");
         }
         if (flight.flightStatus == FlightStatus.CANCELLED) {
-            throw new BusinessException(41002, "航班已取消，不允许继续售卖");
+            throw new BusinessException(41002, "航班已取消，不允许继续售票");
         }
         if (flight.flightStatus == FlightStatus.COMPLETED) {
-            throw new BusinessException(41003, "航班已完成，不允许继续售卖");
+            throw new BusinessException(41003, "航班已完成，不允许继续售票");
         }
     }
 
@@ -315,18 +322,41 @@ public class TicketService {
         return value.setScale(2, RoundingMode.HALF_UP);
     }
 
+    private String normalizePassengerName(String passengerName) {
+        String normalized = requireTrimmedText(passengerName, 40001, "乘机人姓名不能为空");
+        if (normalized.length() < PASSENGER_NAME_MIN_LENGTH) {
+            throw new BusinessException(40004, "乘机人姓名长度必须在2到50个字符之间");
+        }
+        if (normalized.length() > PASSENGER_NAME_MAX_LENGTH) {
+            throw new BusinessException(40003, "乘机人姓名长度必须在2到50个字符之间");
+        }
+        return normalized;
+    }
+
+    private String normalizePassengerIdNumber(String passengerIdNumber) {
+        String normalized = requireTrimmedText(passengerIdNumber, 40001, "乘机人身份证号不能为空");
+        if (!PASSENGER_ID_NUMBER_PATTERN.matcher(normalized).matches()) {
+            throw new BusinessException(45002, "身份证号格式错误");
+        }
+        return normalized;
+    }
+
+    private String requireTrimmedText(String value, int code, String message) {
+        if (value == null) {
+            throw new BusinessException(code, message);
+        }
+        String normalized = value.trim();
+        if (normalized.isEmpty()) {
+            throw new BusinessException(code, message);
+        }
+        return normalized;
+    }
+
     private int safePoints(User user) {
         return user.points == null ? 0 : user.points;
     }
 
     private void refreshMemberLevel(User user) {
         user.memberLevel = safePoints(user) >= VIP_THRESHOLD ? MemberLevel.VIP : MemberLevel.NORMAL;
-    }
-
-    private String firstNonBlank(String first, String second) {
-        if (first != null && !first.trim().isEmpty()) {
-            return first;
-        }
-        return second;
     }
 }

@@ -21,6 +21,13 @@ import com.example.airticket.service.AdminService;
 import com.example.airticket.service.ExpiredOrderService;
 import org.springframework.web.bind.annotation.*;
 
+import javax.sql.DataSource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,13 +38,16 @@ public class AdminController {
     private final AdminService adminService;
     private final TicketSaleRepository ticketRepository;
     private final ExpiredOrderService expiredOrderService;
+    private final DataSource dataSource;
 
     public AdminController(AdminService adminService,
                            TicketSaleRepository ticketRepository,
-                           ExpiredOrderService expiredOrderService) {
+                           ExpiredOrderService expiredOrderService,
+                           DataSource dataSource) {
         this.adminService = adminService;
         this.ticketRepository = ticketRepository;
         this.expiredOrderService = expiredOrderService;
+        this.dataSource = dataSource;
     }
 
     @GetMapping("/user/list")
@@ -221,5 +231,40 @@ public class AdminController {
     @PostMapping("/job/expire-order")
     public ApiResponse<Integer> expireOrder() {
         return ApiResponse.success(expiredOrderService.processExpiredOrders());
+    }
+
+    @PostMapping("/job/reset-demo-data")
+    public ApiResponse<Void> resetDemoData() {
+        executeSqlFile("truncate.sql");
+        executeSqlFile("seed_data.sql");
+        return ApiResponse.success(null);
+    }
+
+    private void executeSqlFile(String relativePath) {
+        Path scriptPath = resolveDatabaseScript(relativePath);
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.setSqlScriptEncoding("UTF-8");
+        populator.addScript(new FileSystemResource(scriptPath));
+        try {
+            populator.execute(dataSource);
+        } catch (Exception ex) {
+            throw new BusinessException(50001, "重置演示数据失败：" + ex.getMessage());
+        }
+    }
+
+    private Path resolveDatabaseScript(String fileName) {
+        Path userDir = Paths.get(System.getProperty("user.dir"));
+        Path direct = userDir.resolve("..").resolve("database").resolve(fileName).normalize();
+        if (Files.exists(direct)) {
+            return direct;
+        }
+        Path repoRoot = userDir.getParent();
+        if (repoRoot != null) {
+            Path second = repoRoot.resolve("database").resolve(fileName).normalize();
+            if (Files.exists(second)) {
+                return second;
+            }
+        }
+        throw new BusinessException(50001, "找不到数据库脚本：" + fileName);
     }
 }

@@ -28,8 +28,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,13 +59,7 @@ class TicketServiceTest {
         User vip = user(1, 1000, MemberLevel.VIP);
         Flight flight = flight(10);
         FlightSegment segment = segment(20, flight);
-        CreateTicketRequest request = new CreateTicketRequest();
-        request.userId = 1;
-        request.flightId = 10;
-        request.segmentId = 20;
-        request.cabinClass = CabinClass.ECONOMY.name();
-        request.passengerName = "演示乘客";
-        request.passengerIdNumber = "110101199001010011";
+        CreateTicketRequest request = validCreateTicketRequest();
         request.mealId = 1;
 
         when(userRepository.findById(1)).thenReturn(Optional.of(vip));
@@ -83,6 +77,37 @@ class TicketServiceTest {
         assertThat(saved.expiredAt).isAfter(saved.bookedAt);
         verify(segmentRepository).findByIdForUpdate(20);
         verify(mealReservationRepository).save(any());
+    }
+
+    @Test
+    void createTicketRejectsPassengerNameShorterThanTwoCharacters() {
+        CreateTicketRequest request = validCreateTicketRequest();
+        request.passengerName = "A";
+
+        assertThatThrownBy(() -> ticketService.createTicket(request))
+                .isInstanceOf(com.example.airticket.exception.BusinessException.class)
+                .satisfies(ex -> assertThat(((com.example.airticket.exception.BusinessException) ex).code).isEqualTo(40004));
+    }
+
+    @Test
+    void createTicketRejectsInvalidPassengerIdNumberFormat() {
+        CreateTicketRequest request = validCreateTicketRequest();
+        request.passengerIdNumber = "123";
+
+        assertThatThrownBy(() -> ticketService.createTicket(request))
+                .isInstanceOf(com.example.airticket.exception.BusinessException.class)
+                .satisfies(ex -> assertThat(((com.example.airticket.exception.BusinessException) ex).code).isEqualTo(45002));
+    }
+
+    @Test
+    void createTicketDoesNotUsePassengerIdNumberDigestToBypassValidation() {
+        CreateTicketRequest request = validCreateTicketRequest();
+        request.passengerIdNumber = "";
+        request.passengerIdNumberDigest = "110101199001010011";
+
+        assertThatThrownBy(() -> ticketService.createTicket(request))
+                .isInstanceOf(com.example.airticket.exception.BusinessException.class)
+                .satisfies(ex -> assertThat(((com.example.airticket.exception.BusinessException) ex).code).isEqualTo(40001));
     }
 
     @Test
@@ -192,5 +217,16 @@ class TicketServiceTest {
         meal.mealType = "NORMAL";
         meal.isAvailable = true;
         return meal;
+    }
+
+    private CreateTicketRequest validCreateTicketRequest() {
+        CreateTicketRequest request = new CreateTicketRequest();
+        request.userId = 1;
+        request.flightId = 10;
+        request.segmentId = 20;
+        request.cabinClass = CabinClass.ECONOMY.name();
+        request.passengerName = "演示乘客";
+        request.passengerIdNumber = "110101199001010011";
+        return request;
     }
 }

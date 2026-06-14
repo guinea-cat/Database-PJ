@@ -178,3 +178,7 @@ export function getDashboardSummary() {
 export function processExpiredOrders() {
   return apiPost<number>('/admin/job/expire-order', {});
 }
+
+export function resetDemoData() {
+  return apiPost<void>('/admin/job/reset-demo-data', {});
+}

@@ -4,6 +4,8 @@ import {
   Coffee,
   CreditCard,
   Edit,
+  Eye,
+  EyeOff,
   Gauge,
   LogOut,
   Plane,
@@ -53,6 +55,7 @@ import {
   saveFlight,
   saveMeal,
   saveSegment,
+  resetDemoData,
   searchFlights,
 } from './api/airticket';
 import {
@@ -102,6 +105,32 @@ const defaultRegister: RegisterForm = {
   email: '',
   idNumber: '',
 };
+
+function isBrokenDisplayName(value?: string) {
+  return !value || /^[?\s]+$/.test(value) || /^[?]+[A-Za-z0-9]*$/.test(value);
+}
+
+function displayUserName(loginAccount: string, userName?: string) {
+  if (!isBrokenDisplayName(userName)) {
+    return userName as string;
+  }
+  const fallbackNames: Record<string, string> = {
+    admin: '管理员',
+    passengerA: '演示乘客A',
+    passengerB: '演示乘客B',
+  };
+  return fallbackNames[loginAccount] ?? loginAccount;
+}
+
+function displayMemberLevel(memberLevel?: string) {
+  if (memberLevel === 'VIP') {
+    return 'VIP 会员';
+  }
+  if (memberLevel === 'NORMAL') {
+    return '普通会员';
+  }
+  return memberLevel ?? '-';
+}
 
 function App() {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => {
@@ -169,7 +198,7 @@ function App() {
             </div>
             <div className="topbar-actions">
               <div className="user-chip">
-                <span>{currentUser.userName}</span>
+                <span>{displayUserName(currentUser.loginAccount, currentUser.userName)}</span>
                 <strong>{currentUser.userType === 'ADMIN' ? '管理员' : currentUser.memberLevel}</strong>
               </div>
               {currentUser.userType === 'ADMIN' && (
@@ -220,6 +249,8 @@ function AuthScreen({
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [loginAccount, setLoginAccount] = useState('passengerA');
   const [password, setPassword] = useState('pass123');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [registerForm, setRegisterForm] = useState<RegisterForm>(defaultRegister);
   const [loading, setLoading] = useState(false);
 
@@ -229,7 +260,7 @@ function AuthScreen({
     try {
       const user = await login(loginAccount, password);
       onLogin(user);
-      notify(`欢迎回来，${user.userName}`, 'success');
+      notify(`欢迎回来，${displayUserName(user.loginAccount, user.userName)}`, 'success');
     } catch (error) {
       notify(error instanceof Error ? error.message : '登录失败', 'error');
     } finally {
@@ -262,9 +293,7 @@ function AuthScreen({
         <div className="hero-copy">
           <p className="eyebrow">LOCAL DEMO · ER FIRST</p>
           <h1>航空票务数据库系统</h1>
-          <p>
-            面向课程演示的本地航空票务平台：航班检索、票务交易、会员积分与管理员维护都严格运行在 ER 图规定的 9 张表内。
-          </p>
+          <p>面向课程演示的本地航空票务平台，覆盖航班检索、票务交易、会员积分与管理员维护。</p>
         </div>
         <div className="route-strip">
           <div>
@@ -297,12 +326,22 @@ function AuthScreen({
             </label>
             <label>
               密码
-              <input
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                required
-              />
+              <div className="password-field">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="icon-button password-toggle"
+                  onClick={() => setShowPassword((value) => !value)}
+                  title={showPassword ? '隐藏密码' : '显示密码'}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </label>
             <div className="quick-row">
               {demoAccounts.map((account) => (
@@ -336,14 +375,34 @@ function AuthScreen({
             ].map(([key, label]) => (
               <label key={key}>
                 {label}
-                <input
-                  type={key === 'password' ? 'password' : 'text'}
-                  value={registerForm[key as keyof RegisterForm]}
-                  onChange={(event) =>
-                    setRegisterForm((form) => ({ ...form, [key]: event.target.value }))
-                  }
-                  required
-                />
+                {key === 'password' ? (
+                  <div className="password-field">
+                    <input
+                      type={showRegisterPassword ? 'text' : 'password'}
+                      value={registerForm.password}
+                      onChange={(event) =>
+                        setRegisterForm((form) => ({ ...form, password: event.target.value }))
+                      }
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="icon-button password-toggle"
+                      onClick={() => setShowRegisterPassword((value) => !value)}
+                      title={showRegisterPassword ? '隐藏密码' : '显示密码'}
+                    >
+                      {showRegisterPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                ) : (
+                  <input
+                    value={registerForm[key as keyof RegisterForm]}
+                    onChange={(event) =>
+                      setRegisterForm((form) => ({ ...form, [key]: event.target.value }))
+                    }
+                    required
+                  />
+                )}
               </label>
             ))}
             <button className="primary-action wide" disabled={loading}>
@@ -397,6 +456,16 @@ function PassengerWorkspace({
     label: airportLabel(airport),
   }));
   const airportLookup = Object.fromEntries(airports.map((airport) => [airport.airportCode, airport]));
+  const passengerDisplayName = displayUserName(user.loginAccount, profile?.userName ?? user.userName);
+
+  useEffect(() => {
+    setOrderForm((form) => {
+      if (form.passengerName === user.userName || isBrokenDisplayName(form.passengerName)) {
+        return { ...form, passengerName: passengerDisplayName };
+      }
+      return form;
+    });
+  }, [passengerDisplayName, user.userName]);
 
   const refreshProfile = async () => {
     const nextProfile = await getMemberProfile(user.userId);
@@ -405,7 +474,7 @@ function PassengerWorkspace({
       ...user,
       memberLevel: nextProfile.memberLevel,
       points: nextProfile.points,
-      userName: nextProfile.userName,
+      userName: displayUserName(user.loginAccount, nextProfile.userName),
     });
   };
 
@@ -547,244 +616,245 @@ function PassengerWorkspace({
 
   return (
     <main className="workspace passenger-grid">
-      <section className="control-panel search-panel">
-        <div className="panel-title">
-          <PlaneTakeoff size={20} />
-          <div>
-            <h2>航班搜索</h2>
-            <p>GET /flight/search</p>
-          </div>
-        </div>
-        <form onSubmit={runSearch} className="form-grid route-form">
-          <label>
-            出发机场
-            <select
-              value={searchForm.departureAirportCode}
-              onChange={(event) => setSearchForm((form) => ({ ...form, departureAirportCode: event.target.value }))}
-            >
-              {airportOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            到达机场
-            <select
-              value={searchForm.arrivalAirportCode}
-              onChange={(event) => setSearchForm((form) => ({ ...form, arrivalAirportCode: event.target.value }))}
-            >
-              {airportOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            日期
-            <input
-              type="date"
-              value={searchForm.flightDate}
-              onChange={(event) => setSearchForm((form) => ({ ...form, flightDate: event.target.value }))}
-            />
-          </label>
-          <button className="primary-action" disabled={loading}>
-            <Search size={18} />
-            查询航班
-          </button>
-        </form>
-      </section>
-
-      <section className="member-board">
-        <div className="member-copy">
-          <p className="eyebrow">MEMBER STATUS</p>
-          <h2>{profile?.memberLevel === 'VIP' ? 'VIP 会员' : '普通会员'}</h2>
-          <p>{profile?.points ?? user.points} / 1000 积分</p>
-        </div>
-        <div className="radar-ring">
-          <span>{vipProgress}%</span>
-        </div>
-        <div className="vip-bar">
-          <span style={{ width: `${vipProgress}%` }} />
-        </div>
-        <p className="small-note">VIP 购票自动按 9 折计算 paymentAmount。</p>
-      </section>
-
-      <section className="results-lane">
-        {flights.length === 0 ? (
-          <div className="empty-state">
-            <PlaneLanding size={36} />
-            <strong>选择出发地、到达地和日期</strong>
-            <p>航班结果会以机场代码、时间轴、余票和价格卡片展示。</p>
-          </div>
-        ) : (
-          flights.map((flight) => (
-            <FlightCard
-              key={flight.segmentId}
-              flight={flight}
-              airportLookup={airportLookup}
-              selected={selectedFlight?.segmentId === flight.segmentId}
-              onSelect={() => setSelectedFlight(flight)}
-            />
-          ))
-        )}
-      </section>
-
-      <section className="control-panel order-panel">
-        <div className="panel-title">
-          <CreditCard size={20} />
-          <div>
-            <h2>下单与支付</h2>
-            <p>POST /ticket/create · POST /ticket/pay</p>
-          </div>
-        </div>
-        {selectedFlight && (
-          <div className="route-summary">
+      <div className="passenger-main">
+        <section className="control-panel search-panel">
+          <div className="panel-title">
+            <PlaneTakeoff size={20} />
             <div>
-              <strong>{selectedFlight.originAirportCode}</strong>
-              <small>{airportCodeLabel(selectedFlight.originAirportCode, airportLookup)}</small>
-            </div>
-            <span>{selectedFlight.flightNumber}</span>
-            <div>
-              <strong>{selectedFlight.destinationAirportCode}</strong>
-              <small>{airportCodeLabel(selectedFlight.destinationAirportCode, airportLookup)}</small>
+              <h2>航班搜索</h2>
+              <p>GET /flight/search</p>
             </div>
           </div>
-        )}
-        <form onSubmit={submitOrder} className="form-grid two-col">
-          <label>
-            舱位
-            <select
-              value={orderForm.cabinClass}
-              onChange={(event) =>
-                setOrderForm((form) => ({ ...form, cabinClass: event.target.value as CabinClass }))
-              }
-            >
-              <option value="ECONOMY">经济舱</option>
-              <option value="FIRST_CLASS">头等舱</option>
-            </select>
-          </label>
-          <label>
-            餐食
-            <select
-              value={orderForm.mealId}
-              onChange={(event) => setOrderForm((form) => ({ ...form, mealId: event.target.value }))}
-            >
-              <option value="">不预订餐食</option>
-              {meals.map((meal) => (
-                <option key={meal.mealId} value={meal.mealId}>
-                  {meal.mealName}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            乘机人
-            <input
-              value={orderForm.passengerName}
-              onChange={(event) => setOrderForm((form) => ({ ...form, passengerName: event.target.value }))}
-            />
-          </label>
-          <label>
-            证件号
-            <input
-              value={orderForm.passengerIdNumber}
-              onChange={(event) => setOrderForm((form) => ({ ...form, passengerIdNumber: event.target.value }))}
-            />
-          </label>
-          <button className="primary-action wide" disabled={loading || !selectedFlight}>
-            <TicketIcon size={18} />
-            创建订单
-          </button>
-        </form>
-        {selectedTicket && (
-          <div className="ticket-slip">
-            <span>{selectedTicket.orderNo}</span>
-            <strong>{statusText(selectedTicket.ticketStatus)}</strong>
-            <p>
-              原价 {formatMoney(selectedTicket.priceAmount)} · 应付 {formatMoney(selectedTicket.paymentAmount)}
-            </p>
-            {selectedTicket.ticketStatus === 'PENDING_PAYMENT' && (
-              <button className="secondary-action" onClick={() => doPay(selectedTicket.ticketId, Boolean(selectedTicket.originalTicketId))}>
-                <CreditCard size={16} />
-                {selectedTicket.originalTicketId ? '支付改签单' : '立即支付'}
-              </button>
-            )}
-          </div>
-        )}
-      </section>
-
-      <section className="control-panel tickets-panel">
-        <div className="panel-title">
-          <ClipboardList size={20} />
-          <div>
-            <h2>我的订单</h2>
-            <p>GET /ticket/my · 退票/改签均为 POST</p>
-          </div>
-        </div>
-        <div className="ticket-list">
-          {tickets.map((ticket) => (
-            <div className="ticket-row" key={ticket.ticketId}>
-              <div className="ticket-main">
-                <strong>#{ticket.ticketId} {statusText(ticket.ticketStatus)} · {ticket.orderNo}</strong>
-                <span>{orderRouteSummary(ticket, ticket, airportLookup)} · {cabinText(ticket.cabinClass)}</span>
-                <em>原价 {formatMoney(ticket.priceAmount)} · 应付 {formatMoney(ticket.paymentAmount)}</em>
-              </div>
-              <div className="row-actions">
-                {ticket.ticketStatus === 'PENDING_PAYMENT' && (
-                  <button className="mini-button" onClick={() => doPay(ticket.ticketId, Boolean(ticket.originalTicketId))}>
-                    支付
-                  </button>
-                )}
-                {ticket.ticketStatus === 'PAID' && (
-                  <>
-                    <button className="mini-button" onClick={() => doRefund(ticket.ticketId)}>退票</button>
-                    <button className="mini-button" onClick={() => loadChangeTargets(ticket)}>改签</button>
-                  </>
-                )}
-              </div>
-            </div>
-          ))}
-          {tickets.length === 0 && <p className="small-note">暂无订单。</p>}
-        </div>
-      </section>
-
-      <section className="control-panel change-panel">
-        <div className="panel-title">
-          <RotateCcw size={20} />
-          <div>
-            <h2>改签工作台</h2>
-            <p>链式 OriginalTicketId 指向上一张票</p>
-          </div>
-        </div>
-        <label>
-          改签原因
-          <input value={changeReason} onChange={(event) => setChangeReason(event.target.value)} />
-        </label>
-        <div className="compact-list">
-          {changeTargets.slice(0, 4).map((target) => (
-            <button key={target.segmentId} className="change-target" onClick={() => doApplyChange(target)}>
-              <span>{airportCodeLabel(target.originAirportCode, airportLookup)} → {airportCodeLabel(target.destinationAirportCode, airportLookup)}</span>
-              <strong>{target.flightNumber}</strong>
-              <em>{target.flightDate} · {shortTime(target.plannedDepartureTime)}-{shortTime(target.plannedArrivalTime)} · {formatMoney(target.economyPrice)}</em>
+          <form onSubmit={runSearch} className="form-grid route-form">
+            <label>
+              出发机场
+              <select
+                value={searchForm.departureAirportCode}
+                onChange={(event) => setSearchForm((form) => ({ ...form, departureAirportCode: event.target.value }))}
+              >
+                {airportOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              到达机场
+              <select
+                value={searchForm.arrivalAirportCode}
+                onChange={(event) => setSearchForm((form) => ({ ...form, arrivalAirportCode: event.target.value }))}
+              >
+                {airportOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              出发日期
+              <input
+                type="date"
+                value={searchForm.flightDate}
+                onChange={(event) => setSearchForm((form) => ({ ...form, flightDate: event.target.value }))}
+              />
+            </label>
+            <button className="primary-action" disabled={loading}>
+              <Search size={18} />
+              搜索航班
             </button>
-          ))}
-          {changeTargets.length === 0 && <p className="small-note">选择一个已支付订单后加载可改签航段。</p>}
-        </div>
-        <div className="history-stack">
-          {changeHistory.map((ticket) => (
-            <span key={ticket.ticketId}>#{ticket.ticketId} ← 原票 #{ticket.originalTicketId}</span>
-          ))}
-        </div>
-      </section>
+          </form>
+        </section>
 
-      <section className="kpi-ribbon">
-        <Kpi label="待支付" value={pendingTickets.length} />
-        <Kpi label="已出票" value={paidTickets.length} />
-        <Kpi label="餐食选项" value={meals.length} />
-      </section>
+        <section className="member-board">
+          <div className="member-copy">
+            <p className="eyebrow">MEMBER STATUS</p>
+            <h2>{passengerDisplayName}</h2>
+            <p>{displayMemberLevel(profile?.memberLevel)}</p>
+            <p>{profile?.points ?? user.points} / 1000 分</p>
+          </div>
+          <div className="radar-ring">
+            <span>{vipProgress}%</span>
+          </div>
+          <div className="vip-bar">
+            <span style={{ width: `${vipProgress}%` }} />
+          </div>
+          <p className="small-note">VIP 会员支付按 9 折结算，paymentAmount 仅展示实际应付金额。</p>
+        </section>
+
+        <section className="kpi-ribbon">
+          <Kpi label="待支付" value={pendingTickets.length} />
+          <Kpi label="已支付" value={paidTickets.length} />
+          <Kpi label="餐食" value={meals.length} />
+        </section>
+      </div>
+
+      <div className="passenger-side">
+        <section className="control-panel order-panel">
+          <div className="panel-title">
+            <CreditCard size={20} />
+            <div>
+              <h2>下单与支付</h2>
+              <p>POST /ticket/create · POST /ticket/pay</p>
+            </div>
+          </div>
+          {selectedFlight && (
+            <div className="route-summary">
+              <div>
+                <strong>{selectedFlight.originAirportCode}</strong>
+                <small>{airportCodeLabel(selectedFlight.originAirportCode, airportLookup)}</small>
+              </div>
+              <span>{selectedFlight.flightNumber}</span>
+              <div>
+                <strong>{selectedFlight.destinationAirportCode}</strong>
+                <small>{airportCodeLabel(selectedFlight.destinationAirportCode, airportLookup)}</small>
+              </div>
+            </div>
+          )}
+          <form onSubmit={submitOrder} className="form-grid two-col">
+            <label>
+              舱位
+              <select
+                value={orderForm.cabinClass}
+                onChange={(event) =>
+                  setOrderForm((form) => ({ ...form, cabinClass: event.target.value as CabinClass }))
+                }
+              >
+                <option value="ECONOMY">经济舱</option>
+                <option value="FIRST_CLASS">头等舱</option>
+              </select>
+            </label>
+            <label>
+              餐食
+              <select
+                value={orderForm.mealId}
+                onChange={(event) => setOrderForm((form) => ({ ...form, mealId: event.target.value }))}
+              >
+                <option value="">不选择餐食</option>
+                {meals.map((meal) => (
+                  <option key={meal.mealId} value={meal.mealId}>
+                    {meal.mealName}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              乘客姓名
+              <input
+                value={orderForm.passengerName}
+                onChange={(event) => setOrderForm((form) => ({ ...form, passengerName: event.target.value }))}
+              />
+            </label>
+            <label>
+              身份证号
+              <input
+                value={orderForm.passengerIdNumber}
+                onChange={(event) => setOrderForm((form) => ({ ...form, passengerIdNumber: event.target.value }))}
+              />
+            </label>
+            <button className="primary-action wide" disabled={loading || !selectedFlight}>
+              <TicketIcon size={18} />
+              创建订单
+            </button>
+          </form>
+          {selectedTicket && (
+            <div className="ticket-slip">
+              <span>{selectedTicket.orderNo}</span>
+              <strong>{statusText(selectedTicket.ticketStatus)}</strong>
+              <p>原价 {formatMoney(selectedTicket.priceAmount)} · 实付 {formatMoney(selectedTicket.paymentAmount)}</p>
+              {selectedTicket.ticketStatus === 'PENDING_PAYMENT' && (
+                <button className="secondary-action" onClick={() => doPay(selectedTicket.ticketId, Boolean(selectedTicket.originalTicketId))}>
+                  <CreditCard size={16} />
+                  {selectedTicket.originalTicketId ? '支付改签差价' : '立即支付'}
+                </button>
+              )}
+            </div>
+          )}
+        </section>
+
+        <section className="results-lane">
+          {flights.length === 0 ? (
+            <div className="empty-state">
+              <PlaneLanding size={36} />
+              <strong>先检索航班，再继续下单</strong>
+              <p>选择出发地、到达地和日期后执行搜索，结果会直接显示在这里。</p>
+            </div>
+          ) : (
+            flights.map((flight) => (
+              <FlightCard
+                key={flight.segmentId}
+                flight={flight}
+                airportLookup={airportLookup}
+                selected={selectedFlight?.segmentId === flight.segmentId}
+                onSelect={() => setSelectedFlight(flight)}
+              />
+            ))
+          )}
+        </section>
+
+        <section className="control-panel tickets-panel">
+          <div className="panel-title">
+            <ClipboardList size={20} />
+            <div>
+              <h2>我的订单</h2>
+              <p>GET /ticket/my · 支付/退票/改签使用 POST</p>
+            </div>
+          </div>
+          <div className="ticket-list">
+            {tickets.map((ticket) => (
+              <div className="ticket-row" key={ticket.ticketId}>
+                <div className="ticket-main">
+                  <strong>#{ticket.ticketId} {statusText(ticket.ticketStatus)} · {ticket.orderNo}</strong>
+                  <span>{orderRouteSummary(ticket, ticket, airportLookup)} · {cabinText(ticket.cabinClass)}</span>
+                  <em>原价 {formatMoney(ticket.priceAmount)} · 实付 {formatMoney(ticket.paymentAmount)}</em>
+                </div>
+                <div className="row-actions">
+                  {ticket.ticketStatus === 'PENDING_PAYMENT' && (
+                    <button className="mini-button" onClick={() => doPay(ticket.ticketId, Boolean(ticket.originalTicketId))}>支付</button>
+                  )}
+                  {ticket.ticketStatus === 'PAID' && (
+                    <>
+                      <button className="mini-button" onClick={() => doRefund(ticket.ticketId)}>退票</button>
+                      <button className="mini-button" onClick={() => loadChangeTargets(ticket)}>改签</button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+            {tickets.length === 0 && <p className="small-note">当前暂无订单</p>}
+          </div>
+        </section>
+
+        <section className="control-panel change-panel">
+          <div className="panel-title">
+            <RotateCcw size={20} />
+            <div>
+              <h2>改签</h2>
+              <p>通过 OriginalTicketId 形成改签链</p>
+            </div>
+          </div>
+          <label>
+            改签原因
+            <input value={changeReason} onChange={(event) => setChangeReason(event.target.value)} />
+          </label>
+          <div className="compact-list">
+            {changeTargets.slice(0, 4).map((target) => (
+              <button key={target.segmentId} className="change-target" onClick={() => doApplyChange(target)}>
+                <span>{airportCodeLabel(target.originAirportCode, airportLookup)} → {airportCodeLabel(target.destinationAirportCode, airportLookup)}</span>
+                <strong>{target.flightNumber}</strong>
+                <em>{target.flightDate} · {shortTime(target.plannedDepartureTime)}-{shortTime(target.plannedArrivalTime)} · {formatMoney(target.economyPrice)}</em>
+              </button>
+            ))}
+            {changeTargets.length === 0 && <p className="small-note">先支付一张已出票订单后，这里会显示可改签航班。</p>}
+          </div>
+          <div className="history-stack">
+            {changeHistory.map((ticket) => (
+              <span key={ticket.ticketId}>#{ticket.ticketId} · 原票 #{ticket.originalTicketId}</span>
+            ))}
+          </div>
+        </section>
+      </div>
     </main>
   );
 }
@@ -907,6 +977,20 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
       setResourceForm((form) => ({ ...form, cityId: form.cityId || String(nextCities[0]?.cityId ?? '') }));
     } catch (error) {
       notify(error instanceof Error ? error.message : '管理员数据加载失败', 'error');
+    }
+  };
+
+  const handleResetDemoData = async () => {
+    const ok = window.confirm('确认恢复默认演示数据吗？这会重置订单、航班、会员积分等演示状态。');
+    if (!ok) {
+      return;
+    }
+    try {
+      await resetDemoData();
+      await refreshAll();
+      notify('演示数据已恢复默认状态', 'success');
+    } catch (error) {
+      notify(error instanceof Error ? error.message : '重置演示数据失败', 'error');
     }
   };
 
@@ -1124,10 +1208,16 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
                 <p>POST /admin/job/expire-order</p>
               </div>
             </div>
-            <button className="primary-action" onClick={expireOrders}>
-              <RefreshCw size={18} />
-              触发过期订单扫描
-            </button>
+            <div className="admin-tools">
+              <button className="primary-action" onClick={expireOrders}>
+                <RefreshCw size={18} />
+                触发过期订单扫描
+              </button>
+              <button className="secondary-action" onClick={handleResetDemoData}>
+                <RotateCcw size={18} />
+                重置演示数据
+              </button>
+            </div>
           </div>
         </section>
       )}
