@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   airportLabel,
   airportCodeLabel,
+  changeChainText,
   changeTargetPrice,
   filterChangeTargets,
   formatForDateTimeLocal,
@@ -138,5 +139,38 @@ describe('display helpers', () => {
 
     expect(changeTargetPrice(target, 'ECONOMY')).toBe(800);
     expect(changeTargetPrice(target, 'FIRST_CLASS')).toBe(1800);
+  });
+
+  it('formats change history as a readable order chain', () => {
+    expect(changeChainText({
+      ticketId: 2,
+      orderNo: 'TS202607010002',
+      ticketStatus: 'PAID',
+      userId: 1,
+      flightId: 11,
+      segmentId: 101,
+      cabinClass: 'ECONOMY',
+      passengerName: 'A',
+      priceAmount: 800,
+      paymentAmount: 100,
+      originalTicketId: 1,
+      originalOrderNo: 'TS202607010001',
+    })).toBe('改签链路：原订单 TS202607010001 -> 新订单 TS202607010002');
+  });
+
+  it('falls back when change history has no original order number', () => {
+    expect(changeChainText({
+      ticketId: 2,
+      orderNo: 'TS202607010002',
+      ticketStatus: 'PAID',
+      userId: 1,
+      flightId: 11,
+      segmentId: 101,
+      cabinClass: 'ECONOMY',
+      passengerName: 'A',
+      priceAmount: 800,
+      paymentAmount: 100,
+      originalTicketId: 1,
+    })).toBe('由原订单改签生成：新订单 TS202607010002');
   });
 });

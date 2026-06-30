@@ -128,6 +128,13 @@ export function maskUserName(userName?: string) {
   return `${chars.slice(0, keep).join('')}${'*'.repeat(chars.length - keep)}`;
 }
 
+export function changeChainText(ticket: Ticket | Pick<Ticket, 'orderNo' | 'originalOrderNo'>) {
+  if (ticket.originalOrderNo) {
+    return `改签链路：原订单 ${ticket.originalOrderNo} -> 新订单 ${ticket.orderNo}`;
+  }
+  return `由原订单改签生成：新订单 ${ticket.orderNo}`;
+}
+
 export function filterChangeTargets(
   ticket: Pick<Ticket, 'segmentId' | 'flightDate' | 'originAirportCode' | 'destinationAirportCode' | 'cabinClass'>,
   candidates: FlightSearchItem[],

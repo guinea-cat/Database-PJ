@@ -75,6 +75,7 @@ export type Ticket = {
   priceAmount: number;
   paymentAmount: number;
   originalTicketId?: number;
+  originalOrderNo?: string;
   changeReason?: string;
   bookedAt?: string;
   paidAt?: string;

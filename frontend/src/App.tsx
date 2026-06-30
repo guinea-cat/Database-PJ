@@ -62,6 +62,7 @@ import {
   airportCodeLabel,
   airportLabel,
   cabinText,
+  changeChainText,
   changeTargetPrice,
   filterChangeTargets,
   formatDateTime,
@@ -904,7 +905,7 @@ function PassengerWorkspace({
           </div>
           <div className="history-stack">
             {changeHistory.map((ticket) => (
-              <span key={ticket.ticketId}>#{ticket.ticketId} · 原票 #{ticket.originalTicketId}</span>
+              <span key={ticket.ticketId}>{changeChainText(ticket)}</span>
             ))}
           </div>
         </section>

@@ -1,5 +1,5 @@
 param(
-  [ValidateSet("users", "privacy", "tickets", "all")]
+  [ValidateSet("users", "privacy", "tickets", "change", "all")]
   [string]$Demo = "all",
   [string]$MysqlExe = "C:\Program Files\MySQL\MySQL Server 9.6\bin\mysql.exe",
   [string]$User = "root",
@@ -13,6 +13,7 @@ $scripts = @{
   users = Join-Path $repoRoot "database\demo_user_table.sql"
   privacy = Join-Path $repoRoot "database\demo_privacy_security.sql"
   tickets = Join-Path $repoRoot "database\demo_special_ticket_orders.sql"
+  change = Join-Path $repoRoot "database\demo_change_chain.sql"
   all = Join-Path $repoRoot "database\demo_all.sql"
 }
 

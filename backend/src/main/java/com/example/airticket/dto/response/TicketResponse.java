@@ -25,6 +25,7 @@ public class TicketResponse {
     public BigDecimal priceAmount;
     public BigDecimal paymentAmount;
     public Integer originalTicketId;
+    public String originalOrderNo;
     public String changeReason;
     public LocalDateTime bookedAt;
     public LocalDateTime paidAt;
@@ -54,6 +55,7 @@ public class TicketResponse {
         response.priceAmount = ticket.priceAmount;
         response.paymentAmount = ticket.paymentAmount;
         response.originalTicketId = ticket.originalTicket == null ? null : ticket.originalTicket.ticketId;
+        response.originalOrderNo = ticket.originalTicket == null ? null : ticket.originalTicket.orderNo;
         response.changeReason = ticket.changeReason;
         response.bookedAt = ticket.bookedAt;
         response.paidAt = ticket.paidAt;

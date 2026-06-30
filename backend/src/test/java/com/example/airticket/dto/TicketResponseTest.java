@@ -51,4 +51,25 @@ class TicketResponseTest {
         assertThat(response.plannedDepartureTime).isEqualTo(LocalDateTime.of(2026, 7, 1, 8, 0));
         assertThat(response.plannedArrivalTime).isEqualTo(LocalDateTime.of(2026, 7, 1, 10, 0));
     }
+
+    @Test
+    void fromIncludesOriginalOrderNumberForChangeChainDisplay() {
+        TicketSale originalTicket = new TicketSale();
+        originalTicket.ticketId = 10001;
+        originalTicket.orderNo = "TS202607010001";
+
+        TicketSale changeTicket = new TicketSale();
+        changeTicket.ticketId = 10002;
+        changeTicket.orderNo = "TS202607010002";
+        changeTicket.ticketStatus = TicketStatus.PAID;
+        changeTicket.cabinClass = CabinClass.ECONOMY;
+        changeTicket.priceAmount = new BigDecimal("800.00");
+        changeTicket.paymentAmount = new BigDecimal("100.00");
+        changeTicket.originalTicket = originalTicket;
+
+        TicketResponse response = TicketResponse.from(changeTicket);
+
+        assertThat(response.originalTicketId).isEqualTo(10001);
+        assertThat(response.originalOrderNo).isEqualTo("TS202607010001");
+    }
 }

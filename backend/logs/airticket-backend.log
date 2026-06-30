@@ -240,3 +240,6 @@
 2026-06-30 18:15:11.254  INFO 30380 --- [http-nio-8080-exec-8] c.e.airticket.service.AdminService       : admin.saveSegment segmentId=612 flightId=10613 specialOffer=true
 2026-06-30 18:15:15.515  INFO 30380 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
 2026-06-30 18:15:16.691  INFO 30380 --- [http-nio-8080-exec-8] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-06-30 18:16:06.011  INFO 30380 --- [http-nio-8080-exec-10] c.example.airticket.service.AuthService  : auth.register userId=4 loginAccount=1 userType=PASSENGER idDigestPrefix=9bd380fc
+2026-06-30 18:16:15.522  INFO 30380 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-06-30 18:17:15.549  INFO 30380 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
