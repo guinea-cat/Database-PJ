@@ -40,8 +40,11 @@ export type FlightSearchItem = {
   plannedArrivalTime: string;
   firstClassRemainingSeats: number;
   economyRemainingSeats: number;
+  originalFirstClassPrice?: number;
+  originalEconomyPrice?: number;
   firstClassPrice: number;
   economyPrice: number;
+  isSpecialOffer: boolean;
   isAvailable: boolean;
 };
 
@@ -68,6 +71,7 @@ export type Ticket = {
   plannedArrivalTime?: string;
   cabinClass: CabinClass;
   passengerName: string;
+  isSpecialOffer?: boolean;
   priceAmount: number;
   paymentAmount: number;
   originalTicketId?: number;
@@ -144,6 +148,7 @@ export type FlightSegment = {
   economyRemainingSeats: number;
   firstClassPrice: number;
   economyPrice: number;
+  isSpecialOffer?: boolean;
   remark?: string;
 };
 

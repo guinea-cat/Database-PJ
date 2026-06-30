@@ -8,4 +8,5 @@ public class ChangeApplyRequest {
     public Integer segmentId;
     public String cabinClass;
     public String changeReason;
+    public Integer mealId;
 }

@@ -21,6 +21,7 @@ public class TicketResponse {
     public LocalDateTime plannedArrivalTime;
     public String cabinClass;
     public String passengerName;
+    public Boolean isSpecialOffer;
     public BigDecimal priceAmount;
     public BigDecimal paymentAmount;
     public Integer originalTicketId;
@@ -49,6 +50,7 @@ public class TicketResponse {
         response.plannedArrivalTime = ticket.segment == null ? null : ticket.segment.plannedArrivalTime;
         response.cabinClass = ticket.cabinClass == null ? null : ticket.cabinClass.name();
         response.passengerName = ticket.passengerName;
+        response.isSpecialOffer = ticket.segment != null && Boolean.TRUE.equals(ticket.segment.isSpecialOffer);
         response.priceAmount = ticket.priceAmount;
         response.paymentAmount = ticket.paymentAmount;
         response.originalTicketId = ticket.originalTicket == null ? null : ticket.originalTicket.ticketId;

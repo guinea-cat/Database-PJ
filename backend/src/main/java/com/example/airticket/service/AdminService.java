@@ -22,6 +22,8 @@ import com.example.airticket.repository.FlightSegmentRepository;
 import com.example.airticket.repository.MealOptionRepository;
 import com.example.airticket.repository.TicketSaleRepository;
 import com.example.airticket.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,8 @@ import java.util.Map;
 
 @Service
 public class AdminService {
+    private static final Logger log = LoggerFactory.getLogger(AdminService.class);
+
     private final UserRepository userRepository;
     private final CityRepository cityRepository;
     private final AirportRepository airportRepository;
@@ -145,7 +149,9 @@ public class AdminService {
         if (flight.flightId != null && ticketRepository.countByFlightFlightId(flight.flightId) > 0) {
             flight.flightStatus = parseFlightStatus(request.flightStatus);
             flight.remark = request.remark;
-            return flightRepository.save(flight);
+            Flight saved = flightRepository.save(flight);
+            log.info("admin.saveFlightStatus flightId={} status={}", saved.flightId, saved.flightStatus);
+            return saved;
         }
         Aircraft aircraft = aircraftRepository.findById(request.aircraftRegNo)
                 .orElseThrow(() -> new BusinessException(40404, "飞机不存在"));
@@ -160,7 +166,9 @@ public class AdminService {
         flight.departureAirportCode = request.departureAirportCode;
         flight.arrivalAirportCode = request.arrivalAirportCode;
         flight.remark = request.remark;
-        return flightRepository.save(flight);
+        Flight saved = flightRepository.save(flight);
+        log.info("admin.saveFlight flightId={} flightNumber={} status={}", saved.flightId, saved.flightNumber, saved.flightStatus);
+        return saved;
     }
 
     @Transactional
@@ -168,6 +176,7 @@ public class AdminService {
         Flight flight = flightRepository.findById(flightId)
                 .orElseThrow(() -> new BusinessException(40405, "航班不存在"));
         flight.flightStatus = FlightStatus.DISABLED;
+        log.info("admin.disableFlight flightId={}", flightId);
         return flight;
     }
 
@@ -176,6 +185,7 @@ public class AdminService {
         Flight flight = flightRepository.findById(flightId)
                 .orElseThrow(() -> new BusinessException(40405, "航班不存在"));
         flight.flightStatus = FlightStatus.NORMAL;
+        log.info("admin.enableFlight flightId={}", flightId);
         return flight;
     }
 
@@ -222,8 +232,11 @@ public class AdminService {
         segment.economyRemainingSeats = request.economyRemainingSeats;
         segment.firstClassPrice = request.firstClassPrice;
         segment.economyPrice = request.economyPrice;
+        segment.isSpecialOffer = Boolean.TRUE.equals(request.isSpecialOffer);
         segment.remark = request.remark;
-        return segmentRepository.save(segment);
+        FlightSegment saved = segmentRepository.save(segment);
+        log.info("admin.saveSegment segmentId={} flightId={} specialOffer={}", saved.segmentId, flight.flightId, saved.isSpecialOffer);
+        return saved;
     }
 
     public List<MealOption> meals() {

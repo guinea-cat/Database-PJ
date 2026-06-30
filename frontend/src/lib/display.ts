@@ -1,4 +1,4 @@
-import type { Airport, FlightStatus, RegisterForm, Ticket, TicketStatus, UserType } from '../types';
+import type { Airport, CabinClass, FlightSearchItem, FlightStatus, RegisterForm, Ticket, TicketStatus, UserType } from '../types';
 
 type AirportLike = Airport | Pick<Airport, 'airportCode' | 'airportName' | 'city'>;
 type AirportLookup = Record<string, AirportLike>;
@@ -115,4 +115,42 @@ export function orderRouteSummary(
   const origin = airportCodeLabel(segment.originAirportCode, airports);
   const destination = airportCodeLabel(segment.destinationAirportCode, airports);
   return `${segment.flightNumber ?? `航班 #${ticket.flightId}`} · ${segment.flightDate ?? '-'} · ${origin} → ${destination} · ${time}`;
+}
+export function maskUserName(userName?: string) {
+  const chars = Array.from(userName?.trim() ?? '');
+  if (chars.length === 0) {
+    return '-';
+  }
+  if (chars.length === 1) {
+    return '*';
+  }
+  const keep = chars.length >= 4 ? 2 : 1;
+  return `${chars.slice(0, keep).join('')}${'*'.repeat(chars.length - keep)}`;
+}
+
+export function filterChangeTargets(
+  ticket: Pick<Ticket, 'segmentId' | 'flightDate' | 'originAirportCode' | 'destinationAirportCode' | 'cabinClass'>,
+  candidates: FlightSearchItem[],
+) {
+  if (!ticket.flightDate || !ticket.originAirportCode || !ticket.destinationAirportCode) {
+    return [];
+  }
+  return candidates.filter((item) => {
+    const hasCabinInventory = ticket.cabinClass === 'FIRST_CLASS'
+      ? item.firstClassRemainingSeats > 0
+      : item.economyRemainingSeats > 0;
+    return item.segmentId !== ticket.segmentId
+      && item.originAirportCode === ticket.originAirportCode
+      && item.destinationAirportCode === ticket.destinationAirportCode
+      && item.flightDate === ticket.flightDate
+      && (item.flightStatus === 'NORMAL' || item.flightStatus === 'DELAYED')
+      && hasCabinInventory;
+  });
+}
+
+export function changeTargetPrice(
+  target: Pick<FlightSearchItem, 'economyPrice' | 'firstClassPrice'>,
+  cabinClass: CabinClass,
+) {
+  return cabinClass === 'FIRST_CLASS' ? target.firstClassPrice : target.economyPrice;
 }

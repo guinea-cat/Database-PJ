@@ -32,6 +32,8 @@ export function getMemberProfile(userId: number) {
 }
 
 export function searchFlights(params: {
+  departureCityId?: number;
+  arrivalCityId?: number;
   departureAirportCode?: string;
   arrivalAirportCode?: string;
   flightDate?: string;
@@ -73,6 +75,7 @@ export function applyChange(body: {
   targetSegmentId: number;
   cabinClass: CabinClass;
   changeReason: string;
+  mealId?: number;
 }) {
   return apiPost<Ticket>('/ticket/change/apply', body);
 }

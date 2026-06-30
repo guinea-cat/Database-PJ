@@ -6,6 +6,7 @@ import com.example.airticket.dto.request.PayTicketRequest;
 import com.example.airticket.entity.Flight;
 import com.example.airticket.entity.FlightSegment;
 import com.example.airticket.entity.MealOption;
+import com.example.airticket.entity.MealReservation;
 import com.example.airticket.entity.TicketSale;
 import com.example.airticket.entity.User;
 import com.example.airticket.enums.CabinClass;
@@ -77,6 +78,44 @@ class TicketServiceTest {
         assertThat(saved.expiredAt).isAfter(saved.bookedAt);
         verify(segmentRepository).findByIdForUpdate(20);
         verify(mealReservationRepository).save(any());
+    }
+
+    @Test
+    void createTicketAppliesHalfPriceForSpecialOfferSegment() {
+        User passenger = user(1, 0, MemberLevel.NORMAL);
+        Flight flight = flight(10);
+        FlightSegment segment = segment(20, flight);
+        segment.isSpecialOffer = true;
+        CreateTicketRequest request = validCreateTicketRequest();
+
+        when(userRepository.findById(1)).thenReturn(Optional.of(passenger));
+        when(flightRepository.findById(10)).thenReturn(Optional.of(flight));
+        when(segmentRepository.findByIdForUpdate(20)).thenReturn(Optional.of(segment));
+        when(ticketRepository.save(any(TicketSale.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        TicketSale saved = ticketService.createTicket(request);
+
+        assertThat(saved.priceAmount).isEqualByComparingTo("500.00");
+        assertThat(saved.paymentAmount).isEqualByComparingTo("500.00");
+    }
+
+    @Test
+    void createTicketAppliesVipDiscountAfterSpecialOfferDiscount() {
+        User vip = user(1, 1000, MemberLevel.VIP);
+        Flight flight = flight(10);
+        FlightSegment segment = segment(20, flight);
+        segment.isSpecialOffer = true;
+        CreateTicketRequest request = validCreateTicketRequest();
+
+        when(userRepository.findById(1)).thenReturn(Optional.of(vip));
+        when(flightRepository.findById(10)).thenReturn(Optional.of(flight));
+        when(segmentRepository.findByIdForUpdate(20)).thenReturn(Optional.of(segment));
+        when(ticketRepository.save(any(TicketSale.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        TicketSale saved = ticketService.createTicket(request);
+
+        assertThat(saved.priceAmount).isEqualByComparingTo("500.00");
+        assertThat(saved.paymentAmount).isEqualByComparingTo("450.00");
     }
 
     @Test
@@ -160,6 +199,7 @@ class TicketServiceTest {
         when(ticketRepository.findByIdForUpdate(100)).thenReturn(Optional.of(oldTicket));
         when(flightRepository.findById(11)).thenReturn(Optional.of(newFlight));
         when(segmentRepository.findByIdForUpdate(21)).thenReturn(Optional.of(newSegment));
+        when(segmentRepository.findByIdForUpdate(20)).thenReturn(Optional.of(oldSegment));
         when(ticketRepository.save(any(TicketSale.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         TicketSale changeTicket = ticketService.applyChange(request);
@@ -169,6 +209,82 @@ class TicketServiceTest {
         assertThat(changeTicket.ticketStatus).isEqualTo(TicketStatus.PENDING_PAYMENT);
         assertThat(changeTicket.paymentAmount).isEqualByComparingTo("180.00");
         verify(segmentRepository).findByIdForUpdate(21);
+    }
+
+    @Test
+    void changeApplyUsesRequestedCabinClassInventoryAndPrice() {
+        User passenger = user(1, 0, MemberLevel.NORMAL);
+        Flight oldFlight = flight(10);
+        Flight newFlight = flight(11);
+        FlightSegment oldSegment = segment(20, oldFlight);
+        FlightSegment newSegment = segment(21, newFlight);
+        newSegment.firstClassPrice = new BigDecimal("2200.00");
+        TicketSale oldTicket = paidTicket(passenger, oldFlight, oldSegment, CabinClass.ECONOMY, "1000.00", "1000.00");
+        ChangeApplyRequest request = validChangeRequest();
+        request.cabinClass = CabinClass.FIRST_CLASS.name();
+
+        when(ticketRepository.findByIdForUpdate(100)).thenReturn(Optional.of(oldTicket));
+        when(flightRepository.findById(11)).thenReturn(Optional.of(newFlight));
+        when(segmentRepository.findByIdForUpdate(21)).thenReturn(Optional.of(newSegment));
+        when(segmentRepository.findByIdForUpdate(20)).thenReturn(Optional.of(oldSegment));
+        when(ticketRepository.save(any(TicketSale.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        TicketSale changeTicket = ticketService.applyChange(request);
+
+        assertThat(newSegment.firstClassRemainingSeats).isEqualTo(1);
+        assertThat(newSegment.economyRemainingSeats).isEqualTo(5);
+        assertThat(changeTicket.cabinClass).isEqualTo(CabinClass.FIRST_CLASS);
+        assertThat(changeTicket.priceAmount).isEqualByComparingTo("2200.00");
+        assertThat(changeTicket.paymentAmount).isEqualByComparingTo("1200.00");
+    }
+
+    @Test
+    void changeApplySavesMealReservationWhenMealIsSelected() {
+        User passenger = user(1, 0, MemberLevel.NORMAL);
+        Flight oldFlight = flight(10);
+        Flight newFlight = flight(11);
+        FlightSegment oldSegment = segment(20, oldFlight);
+        FlightSegment newSegment = segment(21, newFlight);
+        TicketSale oldTicket = paidTicket(passenger, oldFlight, oldSegment, CabinClass.ECONOMY, "1000.00", "1000.00");
+        ChangeApplyRequest request = validChangeRequest();
+        request.mealId = 1;
+
+        when(ticketRepository.findByIdForUpdate(100)).thenReturn(Optional.of(oldTicket));
+        when(flightRepository.findById(11)).thenReturn(Optional.of(newFlight));
+        when(segmentRepository.findByIdForUpdate(21)).thenReturn(Optional.of(newSegment));
+        when(segmentRepository.findByIdForUpdate(20)).thenReturn(Optional.of(oldSegment));
+        when(mealRepository.findById(1)).thenReturn(Optional.of(meal()));
+        when(ticketRepository.save(any(TicketSale.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        TicketSale changeTicket = ticketService.applyChange(request);
+
+        verify(mealReservationRepository).save(any(MealReservation.class));
+        assertThat(changeTicket.originalTicket).isSameAs(oldTicket);
+    }
+
+    @Test
+    void changeApplyAutoCompletesWhenTargetFlightIsCheaper() {
+        User passenger = user(1, 0, MemberLevel.NORMAL);
+        Flight oldFlight = flight(10);
+        Flight newFlight = flight(11);
+        FlightSegment oldSegment = segment(20, oldFlight);
+        FlightSegment newSegment = segment(21, newFlight);
+        newSegment.economyPrice = new BigDecimal("600.00");
+        TicketSale oldTicket = paidTicket(passenger, oldFlight, oldSegment, CabinClass.ECONOMY, "1000.00", "1000.00");
+        ChangeApplyRequest request = validChangeRequest();
+
+        when(ticketRepository.findByIdForUpdate(100)).thenReturn(Optional.of(oldTicket));
+        when(flightRepository.findById(11)).thenReturn(Optional.of(newFlight));
+        when(segmentRepository.findByIdForUpdate(21)).thenReturn(Optional.of(newSegment));
+        when(segmentRepository.findByIdForUpdate(20)).thenReturn(Optional.of(oldSegment));
+        when(ticketRepository.save(any(TicketSale.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        TicketSale changeTicket = ticketService.applyChange(request);
+
+        assertThat(changeTicket.paymentAmount).isEqualByComparingTo("0.00");
+        assertThat(changeTicket.ticketStatus).isEqualTo(TicketStatus.PAID);
+        assertThat(oldTicket.ticketStatus).isEqualTo(TicketStatus.CHANGE_SUCCESS);
+        assertThat(oldSegment.economyRemainingSeats).isEqualTo(6);
     }
 
     private User user(int id, int points, MemberLevel level) {
@@ -217,6 +333,29 @@ class TicketServiceTest {
         meal.mealType = "NORMAL";
         meal.isAvailable = true;
         return meal;
+    }
+
+    private ChangeApplyRequest validChangeRequest() {
+        ChangeApplyRequest request = new ChangeApplyRequest();
+        request.ticketId = 100;
+        request.targetFlightId = 11;
+        request.targetSegmentId = 21;
+        return request;
+    }
+
+    private TicketSale paidTicket(User passenger, Flight flight, FlightSegment segment, CabinClass cabinClass, String priceAmount, String paymentAmount) {
+        TicketSale ticket = new TicketSale();
+        ticket.ticketId = 100;
+        ticket.user = passenger;
+        ticket.flight = flight;
+        ticket.segment = segment;
+        ticket.cabinClass = cabinClass;
+        ticket.ticketStatus = TicketStatus.PAID;
+        ticket.priceAmount = new BigDecimal(priceAmount);
+        ticket.paymentAmount = new BigDecimal(paymentAmount);
+        ticket.passengerName = "婕旂ず涔樺";
+        ticket.passengerIdNumberDigest = "digest";
+        return ticket;
     }
 
     private CreateTicketRequest validCreateTicketRequest() {

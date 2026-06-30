@@ -3,6 +3,7 @@ package com.example.airticket.dto.response;
 import com.example.airticket.entity.FlightSegment;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -23,8 +24,11 @@ public class FlightSearchItemResponse {
     public LocalDateTime plannedArrivalTime;
     public Integer firstClassRemainingSeats;
     public Integer economyRemainingSeats;
+    public BigDecimal originalFirstClassPrice;
+    public BigDecimal originalEconomyPrice;
     public BigDecimal firstClassPrice;
     public BigDecimal economyPrice;
+    public Boolean isSpecialOffer;
     public Boolean isAvailable;
 
     public static FlightSearchItemResponse from(FlightSegment segment) {
@@ -45,9 +49,17 @@ public class FlightSearchItemResponse {
         response.plannedArrivalTime = segment.plannedArrivalTime;
         response.firstClassRemainingSeats = segment.firstClassRemainingSeats;
         response.economyRemainingSeats = segment.economyRemainingSeats;
-        response.firstClassPrice = segment.firstClassPrice;
-        response.economyPrice = segment.economyPrice;
+        response.originalFirstClassPrice = segment.firstClassPrice;
+        response.originalEconomyPrice = segment.economyPrice;
+        response.isSpecialOffer = Boolean.TRUE.equals(segment.isSpecialOffer);
+        response.firstClassPrice = displayPrice(segment.firstClassPrice, segment.isSpecialOffer);
+        response.economyPrice = displayPrice(segment.economyPrice, segment.isSpecialOffer);
         response.isAvailable = segment.firstClassRemainingSeats > 0 || segment.economyRemainingSeats > 0;
         return response;
+    }
+
+    private static BigDecimal displayPrice(BigDecimal originalPrice, Boolean isSpecialOffer) {
+        BigDecimal price = Boolean.TRUE.equals(isSpecialOffer) ? originalPrice.multiply(new BigDecimal("0.50")) : originalPrice;
+        return price.setScale(2, RoundingMode.HALF_UP);
     }
 }

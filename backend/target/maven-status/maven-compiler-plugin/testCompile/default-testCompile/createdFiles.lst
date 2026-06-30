@@ -1,3 +1,5 @@
+com\example\airticket\dto\TicketResponseTest.class
 com\example\airticket\service\AdminServiceTest.class
 com\example\airticket\service\AuthServiceTest.class
 com\example\airticket\service\TicketServiceTest.class
+com\example\airticket\dto\FlightSearchItemResponseTest.class

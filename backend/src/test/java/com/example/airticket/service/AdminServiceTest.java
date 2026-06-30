@@ -116,6 +116,25 @@ class AdminServiceTest {
         assertThat(saved.destinationAirportCode).isEqualTo("SHA");
     }
 
+    @Test
+    void saveSegmentPersistsSpecialOfferFlag() {
+        Flight flight = new Flight();
+        flight.flightId = 21;
+        SegmentSaveRequest request = validSegmentRequest();
+        request.isSpecialOffer = true;
+
+        when(flightRepository.findById(21)).thenReturn(Optional.of(flight));
+        when(segmentRepository.findByFlightFlightIdAndOriginStopNoAndDestinationStopNo(21, 1, 2))
+                .thenReturn(Optional.empty());
+        when(airportRepository.findById("PEK")).thenReturn(Optional.of(new Airport()));
+        when(airportRepository.findById("SHA")).thenReturn(Optional.of(new Airport()));
+        when(segmentRepository.save(any(FlightSegment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        FlightSegment saved = adminService.saveSegment(request);
+
+        assertThat(saved.isSpecialOffer).isTrue();
+    }
+
     private SegmentSaveRequest validSegmentRequest() {
         SegmentSaveRequest request = new SegmentSaveRequest();
         request.flightId = 21;

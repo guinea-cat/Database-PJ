@@ -11,6 +11,9 @@ const visibleCopy = [
   '创建订单',
   '立即支付',
   '支付改签差价',
+  'special-badge',
+  'special-price-note',
+  'isSpecialOffer',
 ];
 
 describe('App source copy', () => {

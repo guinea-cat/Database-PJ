@@ -20,5 +20,6 @@ public class SegmentSaveRequest {
     public Integer economyRemainingSeats;
     public BigDecimal firstClassPrice;
     public BigDecimal economyPrice;
+    public Boolean isSpecialOffer;
     public String remark;
 }

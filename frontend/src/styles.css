@@ -734,6 +734,14 @@ select:focus {
   align-items: center;
 }
 
+.flight-card-badges {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .flight-card-head span {
   font-weight: 950;
   color: var(--ink-strong);
@@ -747,6 +755,12 @@ select:focus {
   font-style: normal;
   font-size: 12px;
   font-weight: 900;
+}
+
+.flight-card-head em.special-badge,
+.ticket-special {
+  color: #281400;
+  background: linear-gradient(135deg, var(--amber), #fff0a8);
 }
 
 .airport-pair {
@@ -815,6 +829,22 @@ select:focus {
   border-radius: 6px;
   font-size: 15px;
   font-weight: 800;
+}
+
+.special-price-note {
+  display: grid;
+  gap: 3px;
+  margin-top: 10px;
+  padding: 9px 10px;
+  color: var(--ink);
+  background: rgba(246, 196, 83, 0.12);
+  border: 1px solid rgba(246, 196, 83, 0.34);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.special-price-note strong {
+  color: var(--amber);
 }
 
 .order-panel,
@@ -914,6 +944,17 @@ select:focus {
   font-style: normal;
   font-size: 14px;
   font-weight: 900;
+}
+
+.ticket-special {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 950;
 }
 
 .row-actions {
@@ -1043,6 +1084,25 @@ select:focus {
 
 .resource-card .form-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.checkbox-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 8px 10px;
+  color: var(--ink);
+  background: rgba(3, 9, 18, 0.52);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.checkbox-row input {
+  width: 18px;
+  min-height: 18px;
+  accent-color: var(--amber);
 }
 
 @media (prefers-reduced-motion: reduce) {

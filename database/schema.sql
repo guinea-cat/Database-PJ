@@ -92,6 +92,7 @@ CREATE TABLE IF NOT EXISTS FlightSegment (
   EconomyRemainingSeats INT NOT NULL,
   FirstClassPrice DECIMAL(10,2) NOT NULL,
   EconomyPrice DECIMAL(10,2) NOT NULL,
+  IsSpecialOffer BOOLEAN NOT NULL DEFAULT FALSE,
   Remark VARCHAR(255),
   CONSTRAINT fk_segment_flight FOREIGN KEY (FlightId) REFERENCES Flight (FlightId),
   CONSTRAINT fk_segment_origin_airport FOREIGN KEY (OriginAirportCode) REFERENCES Airport (AirportCode),

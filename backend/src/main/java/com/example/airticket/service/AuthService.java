@@ -8,6 +8,8 @@ import com.example.airticket.enums.UserType;
 import com.example.airticket.exception.BusinessException;
 import com.example.airticket.repository.UserRepository;
 import com.example.airticket.util.SecurityUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,8 @@ import java.util.regex.Pattern;
 
 @Service
 public class AuthService {
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
+
     private static final Pattern PHONE_PATTERN = Pattern.compile("^\\d{11}$");
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
     private static final Pattern ID_NUMBER_PATTERN = Pattern.compile("^[1-9]\\d{5}(18|19|20)\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\\d|3[01])\\d{3}[0-9Xx]$");
@@ -55,7 +59,10 @@ public class AuthService {
         user.userType = UserType.PASSENGER;
         user.memberLevel = MemberLevel.NORMAL;
         user.points = 0;
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        log.info("auth.register userId={} loginAccount={} userType={} idDigestPrefix={}",
+                saved.userId, saved.loginAccount, saved.userType, safeDigestPrefix(saved.idNumberDigest));
+        return saved;
     }
 
     public User login(LoginRequest request) {
@@ -64,8 +71,10 @@ public class AuthService {
         User user = userRepository.findByLoginAccount(request.loginAccount)
                 .orElseThrow(() -> new BusinessException(40102, "用户名或密码错误"));
         if (!SecurityUtil.matchesPassword(request.password, user.passwordHash)) {
+            log.warn("auth.loginFailed loginAccount={} reason=password_mismatch", request.loginAccount);
             throw new BusinessException(40102, "用户名或密码错误");
         }
+        log.info("auth.loginSuccess userId={} loginAccount={} userType={}", user.userId, user.loginAccount, user.userType);
         return user;
     }
 
@@ -85,6 +94,7 @@ public class AuthService {
         user.memberLevel = MemberLevel.NORMAL;
         user.idNumberDigest = SecurityUtil.sha256Digest("cancelled-id-" + suffix);
         user.passwordHash = SecurityUtil.hashPassword("cancelled-password-" + suffix);
+        log.info("auth.cancelAccount userId={}", userId);
         return user;
     }
 
@@ -119,5 +129,12 @@ public class AuthService {
             return first;
         }
         return second;
+    }
+
+    private String safeDigestPrefix(String digest) {
+        if (digest == null || digest.length() < 8) {
+            return "null";
+        }
+        return digest.substring(0, 8);
     }
 }

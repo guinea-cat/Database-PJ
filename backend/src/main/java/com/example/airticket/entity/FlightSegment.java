@@ -58,6 +58,9 @@ public class FlightSegment {
     @Column(name = "EconomyPrice", nullable = false)
     public BigDecimal economyPrice;
 
+    @Column(name = "IsSpecialOffer", nullable = false)
+    public Boolean isSpecialOffer = false;
+
     @Column(name = "Remark")
     public String remark;
 }

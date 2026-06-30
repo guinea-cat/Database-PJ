@@ -62,9 +62,12 @@ import {
   airportCodeLabel,
   airportLabel,
   cabinText,
+  changeTargetPrice,
+  filterChangeTargets,
   formatDateTime,
   formatForDateTimeLocal,
   formatMoney,
+  maskUserName,
   orderRouteSummary,
   roleHome,
   shortTime,
@@ -426,18 +429,20 @@ function PassengerWorkspace({
   notify: (message: string, kind?: Toast['kind']) => void;
 }) {
   const [profile, setProfile] = useState<MemberProfile | null>(null);
+  const [cities, setCities] = useState<City[]>([]);
   const [airports, setAirports] = useState<Airport[]>([]);
   const [meals, setMeals] = useState<MealOption[]>([]);
   const [flights, setFlights] = useState<FlightSearchItem[]>([]);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [selectedFlight, setSelectedFlight] = useState<FlightSearchItem | null>(null);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+  const [changeCandidates, setChangeCandidates] = useState<FlightSearchItem[]>([]);
   const [changeTargets, setChangeTargets] = useState<FlightSearchItem[]>([]);
   const [changeHistory, setChangeHistory] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchForm, setSearchForm] = useState({
-    departureAirportCode: 'PEK',
-    arrivalAirportCode: 'SHA',
+    departureCityId: '1',
+    arrivalCityId: '2',
     flightDate: '2026-07-01',
   });
   const [orderForm, setOrderForm] = useState({
@@ -448,9 +453,16 @@ function PassengerWorkspace({
   });
   const [changeReason, setChangeReason] = useState('演示改签到更合适的航班');
 
+  const [changeCabinClass, setChangeCabinClass] = useState<CabinClass>('ECONOMY');
+  const [changeMealId, setChangeMealId] = useState('');
+
   const paidTickets = tickets.filter((ticket) => ticket.ticketStatus === 'PAID');
   const pendingTickets = tickets.filter((ticket) => ticket.ticketStatus === 'PENDING_PAYMENT');
   const vipProgress = profile ? Math.min(100, Math.round((profile.points / profile.vipThreshold) * 100)) : 0;
+  const cityOptions = cities.map((city) => ({
+    value: String(city.cityId),
+    label: `${city.cityName} ${city.cityCode}`,
+  }));
   const airportOptions = airports.map((airport) => ({
     value: airport.airportCode,
     label: airportLabel(airport),
@@ -484,16 +496,18 @@ function PassengerWorkspace({
 
   const bootstrap = async () => {
     try {
-      const [nextProfile, nextMeals, nextTickets, nextAirports] = await Promise.all([
+      const [nextProfile, nextMeals, nextTickets, nextAirports, nextCities] = await Promise.all([
         getMemberProfile(user.userId),
         listMeals(),
         listMyTickets(user.userId),
         listAirports(),
+        listCities(),
       ]);
       setProfile(nextProfile);
       setMeals(nextMeals.filter((meal) => meal.isAvailable));
       setTickets(nextTickets);
       setAirports(nextAirports);
+      setCities(nextCities);
     } catch (error) {
       notify(error instanceof Error ? error.message : '旅客数据加载失败', 'error');
     }
@@ -503,11 +517,21 @@ function PassengerWorkspace({
     void bootstrap();
   }, [user.userId]);
 
+  useEffect(() => {
+    if (selectedTicket && changeCandidates.length > 0) {
+      setChangeTargets(filterChangeTargets({ ...selectedTicket, cabinClass: changeCabinClass }, changeCandidates));
+    }
+  }, [selectedTicket, changeCandidates, changeCabinClass]);
+
   const runSearch = async (event?: FormEvent) => {
     event?.preventDefault();
     setLoading(true);
     try {
-      const data = await searchFlights(searchForm);
+      const data = await searchFlights({
+        departureCityId: Number(searchForm.departureCityId),
+        arrivalCityId: Number(searchForm.arrivalCityId),
+        flightDate: searchForm.flightDate,
+      });
       setFlights(data);
       setSelectedFlight(data[0] ?? null);
       notify(`查询到 ${data.length} 个可售航段`, 'success');
@@ -574,14 +598,17 @@ function PassengerWorkspace({
 
   const loadChangeTargets = async (ticket: Ticket) => {
     setSelectedTicket(ticket);
+    setChangeCabinClass(ticket.cabinClass);
+    setChangeMealId('');
     setLoading(true);
     try {
-      const current = flights.find((item) => item.segmentId !== ticket.segmentId);
-      if (current) {
-        setChangeTargets(flights.filter((item) => item.segmentId !== ticket.segmentId));
-      } else {
-        setChangeTargets(await searchFlights({ departureAirportCode: 'PEK', arrivalAirportCode: 'TFU' }));
-      }
+      const candidates = await searchFlights({
+        departureAirportCode: ticket.originAirportCode,
+        arrivalAirportCode: ticket.destinationAirportCode,
+        flightDate: ticket.flightDate,
+      });
+      setChangeCandidates(candidates);
+      setChangeTargets(filterChangeTargets({ ...ticket, cabinClass: ticket.cabinClass }, candidates));
       setChangeHistory(await getChangeHistory(ticket.ticketId));
     } catch (error) {
       notify(error instanceof Error ? error.message : '改签航班加载失败', 'error');
@@ -600,13 +627,19 @@ function PassengerWorkspace({
         ticketId: selectedTicket.ticketId,
         targetFlightId: target.flightId,
         targetSegmentId: target.segmentId,
-        cabinClass: selectedTicket.cabinClass,
+        cabinClass: changeCabinClass,
         changeReason,
+        mealId: changeMealId ? Number(changeMealId) : undefined,
       });
       setSelectedTicket(ticket);
-      await refreshTickets();
+      await Promise.all([refreshProfile(), refreshTickets()]);
       setChangeHistory(await getChangeHistory(selectedTicket.ticketId));
-      notify(`改签单 ${ticket.orderNo} 已创建`, 'success');
+      notify(
+        Number(ticket.paymentAmount) === 0
+          ? '改签成功，无需补差价；差价已退还/无需支付'
+          : `改签单 ${ticket.orderNo} 已创建，请支付差价`,
+        'success',
+      );
     } catch (error) {
       notify(error instanceof Error ? error.message : '申请改签失败', 'error');
     } finally {
@@ -627,12 +660,12 @@ function PassengerWorkspace({
           </div>
           <form onSubmit={runSearch} className="form-grid route-form">
             <label>
-              出发机场
+              出发城市
               <select
-                value={searchForm.departureAirportCode}
-                onChange={(event) => setSearchForm((form) => ({ ...form, departureAirportCode: event.target.value }))}
+                value={searchForm.departureCityId}
+                onChange={(event) => setSearchForm((form) => ({ ...form, departureCityId: event.target.value }))}
               >
-                {airportOptions.map((option) => (
+                {cityOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
@@ -640,12 +673,12 @@ function PassengerWorkspace({
               </select>
             </label>
             <label>
-              到达机场
+              到达城市
               <select
-                value={searchForm.arrivalAirportCode}
-                onChange={(event) => setSearchForm((form) => ({ ...form, arrivalAirportCode: event.target.value }))}
+                value={searchForm.arrivalCityId}
+                onChange={(event) => setSearchForm((form) => ({ ...form, arrivalCityId: event.target.value }))}
               >
-                {airportOptions.map((option) => (
+                {cityOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
@@ -762,6 +795,7 @@ function PassengerWorkspace({
             <div className="ticket-slip">
               <span>{selectedTicket.orderNo}</span>
               <strong>{statusText(selectedTicket.ticketStatus)}</strong>
+              {selectedTicket.isSpecialOffer && <em className="ticket-special">特价票</em>}
               <p>原价 {formatMoney(selectedTicket.priceAmount)} · 实付 {formatMoney(selectedTicket.paymentAmount)}</p>
               {selectedTicket.ticketStatus === 'PENDING_PAYMENT' && (
                 <button className="secondary-action" onClick={() => doPay(selectedTicket.ticketId, Boolean(selectedTicket.originalTicketId))}>
@@ -807,6 +841,7 @@ function PassengerWorkspace({
                 <div className="ticket-main">
                   <strong>#{ticket.ticketId} {statusText(ticket.ticketStatus)} · {ticket.orderNo}</strong>
                   <span>{orderRouteSummary(ticket, ticket, airportLookup)} · {cabinText(ticket.cabinClass)}</span>
+                  {ticket.isSpecialOffer && <span className="ticket-special">特价票</span>}
                   <em>原价 {formatMoney(ticket.priceAmount)} · 实付 {formatMoney(ticket.paymentAmount)}</em>
                 </div>
                 <div className="row-actions">
@@ -838,12 +873,31 @@ function PassengerWorkspace({
             改签原因
             <input value={changeReason} onChange={(event) => setChangeReason(event.target.value)} />
           </label>
+          <label>
+            改签舱位
+            <select value={changeCabinClass} onChange={(event) => setChangeCabinClass(event.target.value as CabinClass)}>
+              <option value="ECONOMY">经济舱</option>
+              <option value="FIRST_CLASS">头等舱</option>
+            </select>
+          </label>
+          <label>
+            改签餐食
+            <select value={changeMealId} onChange={(event) => setChangeMealId(event.target.value)}>
+              <option value="">不选择餐食</option>
+              {meals.map((meal) => (
+                <option key={meal.mealId} value={meal.mealId}>
+                  {meal.mealName}
+                </option>
+              ))}
+            </select>
+          </label>
+          <p className="small-note">仅展示同航线、同日期、所选舱位有余票的其他航段。</p>
           <div className="compact-list">
             {changeTargets.slice(0, 4).map((target) => (
               <button key={target.segmentId} className="change-target" onClick={() => doApplyChange(target)}>
                 <span>{airportCodeLabel(target.originAirportCode, airportLookup)} → {airportCodeLabel(target.destinationAirportCode, airportLookup)}</span>
                 <strong>{target.flightNumber}</strong>
-                <em>{target.flightDate} · {shortTime(target.plannedDepartureTime)}-{shortTime(target.plannedArrivalTime)} · {formatMoney(target.economyPrice)}</em>
+                <em>{target.flightDate} · {shortTime(target.plannedDepartureTime)}-{shortTime(target.plannedArrivalTime)} · {formatMoney(changeTargetPrice(target, changeCabinClass))}</em>
               </button>
             ))}
             {changeTargets.length === 0 && <p className="small-note">先支付一张已出票订单后，这里会显示可改签航班。</p>}
@@ -870,10 +924,14 @@ function FlightCard({
   selected: boolean;
   onSelect: () => void;
 }) {
+  const economyOriginalPrice = flight.originalEconomyPrice ?? flight.economyPrice;
+  const firstClassOriginalPrice = flight.originalFirstClassPrice ?? flight.firstClassPrice;
+
   return (
     <button className={`flight-card ${selected ? 'selected' : ''}`} onClick={onSelect}>
       <div className="flight-card-head">
         <span>{flight.flightNumber}</span>
+        {flight.isSpecialOffer && <em className="special-badge">特价票</em>}
         <em>{statusText(flight.flightStatus)}</em>
       </div>
       <div className="airport-pair">
@@ -892,6 +950,12 @@ function FlightCard({
         </div>
       </div>
       <div className="seat-grid">
+        {flight.isSpecialOffer && (
+          <span className="special-price-note wide">
+            <span>原价: ECONOMY {formatMoney(economyOriginalPrice)} / FIRST {formatMoney(firstClassOriginalPrice)}</span>
+            <strong>五折价: ECONOMY {formatMoney(flight.economyPrice)} / FIRST {formatMoney(flight.firstClassPrice)}</strong>
+          </span>
+        )}
         <span>经济舱 {flight.economyRemainingSeats} · {formatMoney(flight.economyPrice)}</span>
         <span>头等舱 {flight.firstClassRemainingSeats} · {formatMoney(flight.firstClassPrice)}</span>
       </div>
@@ -933,6 +997,7 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
     economyRemainingSeats: 50,
     firstClassPrice: 1800,
     economyPrice: 1000,
+    isSpecialOffer: false,
     remark: '管理员演示航段',
   });
   const [mealForm, setMealForm] = useState({ mealName: '低脂餐', mealType: 'LOW_FAT', isAvailable: true, description: '演示餐食' });
@@ -1152,6 +1217,7 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
       economyRemainingSeats: segment.economyRemainingSeats,
       firstClassPrice: Number(segment.firstClassPrice),
       economyPrice: Number(segment.economyPrice),
+      isSpecialOffer: Boolean(segment.isSpecialOffer),
       remark: segment.remark ?? '',
     });
   };
@@ -1171,6 +1237,7 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
       economyRemainingSeats: 50,
       firstClassPrice: 1800,
       economyPrice: 1000,
+      isSpecialOffer: false,
       remark: '管理员演示航段',
     });
   };
@@ -1299,6 +1366,14 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
               <NumberInput label="头等舱余票" value={segmentForm.firstClassRemainingSeats} onChange={(value) => setSegmentForm((form) => ({ ...form, firstClassRemainingSeats: value }))} />
               <NumberInput label="经济舱价格" value={segmentForm.economyPrice} onChange={(value) => setSegmentForm((form) => ({ ...form, economyPrice: value }))} />
               <NumberInput label="头等舱价格" value={segmentForm.firstClassPrice} onChange={(value) => setSegmentForm((form) => ({ ...form, firstClassPrice: value }))} />
+              <label className="checkbox-row wide">
+                <input
+                  type="checkbox"
+                  checked={segmentForm.isSpecialOffer}
+                  onChange={(event) => setSegmentForm((form) => ({ ...form, isSpecialOffer: event.target.checked }))}
+                />
+                <span>特价票（原价 5 折）</span>
+              </label>
               <button className="primary-action wide">
                 <Plus size={18} />
                 保存航段
@@ -1318,6 +1393,7 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
               meta: `${formatDateTime(segment.plannedDepartureTime)} · 经济舱 ${segment.economyRemainingSeats}`,
               action: (
                 <div className="row-actions">
+                  {segment.isSpecialOffer && <span className="ticket-special">特价票</span>}
                   <button className="mini-button" onClick={() => editSegment(segment)}>
                     <Edit size={14} />
                     编辑
@@ -1370,11 +1446,14 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
         <section className="admin-content two-panel">
           <DataTable
             title="用户列表 GET /admin/user/list"
-            rows={users.slice(0, 10).map((item) => ({
+            rows={users.slice(0, 10).map((rawItem) => {
+              const item = { ...rawItem, userName: maskUserName(rawItem.userName) };
+              return ({
               key: String(item.userId),
               main: `${item.userName} · ${item.loginAccount}`,
               meta: `${item.userType} · ${item.memberLevel} · ${item.points} 分`,
-            }))}
+              });
+            })}
           />
           <DataTable
             title="订单列表 GET /admin/ticket/list"
