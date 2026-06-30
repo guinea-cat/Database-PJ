@@ -90,7 +90,7 @@ WHERE FlightId BETWEEN 1 AND 20
 ON DUPLICATE KEY UPDATE FirstClassRemainingSeats = VALUES(FirstClassRemainingSeats), EconomyRemainingSeats = VALUES(EconomyRemainingSeats), FirstClassPrice = VALUES(FirstClassPrice), EconomyPrice = VALUES(EconomyPrice), Remark = VALUES(Remark);
 
 INSERT INTO FlightSegment (FlightId, OriginStopNo, DestinationStopNo, OriginAirportCode, DestinationAirportCode, PlannedDepartureTime, PlannedArrivalTime, FirstClassRemainingSeats, EconomyRemainingSeats, FirstClassPrice, EconomyPrice, Remark) VALUES
-(21, 1, 2, 'PEK', 'SHA', '2026-07-01 08:00:00', '2026-07-01 10:00:00', 8, 50, 1500.00, 800.00, '北京到上海区间'),
+(21, 1, 2, 'PEK', 'SHA', '2026-07-01 08:00:00', '2026-07-01 10:00:00', 5, 50, 1500.00, 800.00, '北京到上海区间'),
 (21, 2, 3, 'SHA', 'TFU', '2026-07-01 11:30:00', '2026-07-01 14:00:00', 8, 50, 1700.00, 900.00, '上海到成都区间'),
 (21, 1, 3, 'PEK', 'TFU', '2026-07-01 08:00:00', '2026-07-01 14:00:00', 8, 50, 2600.00, 1400.00, '北京到成都全程区间'),
 (22, 1, 2, 'CAN', 'SZX', '2026-07-02 08:00:00', '2026-07-02 09:00:00', 8, 50, 900.00, 500.00, '广州到深圳区间'),

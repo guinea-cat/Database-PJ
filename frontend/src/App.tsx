@@ -656,7 +656,6 @@ function PassengerWorkspace({
             <PlaneTakeoff size={20} />
             <div>
               <h2>航班搜索</h2>
-              <p>GET /flight/search</p>
             </div>
           </div>
           <form onSubmit={runSearch} className="form-grid route-form">
@@ -730,7 +729,6 @@ function PassengerWorkspace({
             <CreditCard size={20} />
             <div>
               <h2>下单与支付</h2>
-              <p>POST /ticket/create · POST /ticket/pay</p>
             </div>
           </div>
           {selectedFlight && (
@@ -833,7 +831,6 @@ function PassengerWorkspace({
             <ClipboardList size={20} />
             <div>
               <h2>我的订单</h2>
-              <p>GET /ticket/my · 支付/退票/改签使用 POST</p>
             </div>
           </div>
           <div className="ticket-list">
@@ -867,7 +864,7 @@ function PassengerWorkspace({
             <RotateCcw size={20} />
             <div>
               <h2>改签</h2>
-              <p>通过 OriginalTicketId 形成改签链</p>
+              <p>改签链可追溯</p>
             </div>
           </div>
           <label>
@@ -1074,7 +1071,7 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
     try {
       await saveFlight(flightForm);
       await refreshAll();
-      notify('航班已保存，使用 POST /admin/flight/update', 'success');
+      notify('航班已保存', 'success');
     } catch (error) {
       notify(error instanceof Error ? error.message : '航班保存失败', 'error');
     }
@@ -1273,7 +1270,6 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
               <RefreshCw size={20} />
               <div>
                 <h2>演示辅助</h2>
-                <p>POST /admin/job/expire-order</p>
               </div>
             </div>
             <div className="admin-tools">
@@ -1297,7 +1293,6 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
               <PlaneTakeoff size={20} />
               <div>
                 <h2>新增/修改航班</h2>
-                <p>POST /admin/flight/update</p>
               </div>
             </div>
             <form onSubmit={submitFlight} className="form-grid two-col">
@@ -1317,7 +1312,7 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
             </form>
           </div>
           <DataTable
-            title="航班列表 GET /admin/flight/list"
+            title="航班列表"
             rows={flights.slice(0, 10).map((flight) => ({
               key: String(flight.flightId),
               main: `${flight.flightNumber} · ${flight.departureAirportCode} → ${flight.arrivalAirportCode}`,
@@ -1346,7 +1341,6 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
               <PlaneLanding size={20} />
               <div>
                 <h2>{editingSegmentId ? `编辑航段 #${editingSegmentId}` : '新增航段'}</h2>
-                <p>POST /admin/segment/update</p>
               </div>
             </div>
             <form onSubmit={submitSegment} className="form-grid two-col">
@@ -1387,7 +1381,7 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
             </form>
           </div>
           <DataTable
-            title="航段列表 GET /admin/segment/list"
+            title="航段列表"
             rows={segments.slice(0, 12).map((segment) => ({
               key: String(segment.segmentId),
               main: `#${segment.segmentId} ${segment.originAirportCode} → ${segment.destinationAirportCode}`,
@@ -1409,19 +1403,19 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
 
       {tab === 'resources' && (
         <section className="admin-content resources-grid">
-          <ResourceCard title="城市 POST /admin/city/update" onSubmit={submitCity}>
+          <ResourceCard title="城市" onSubmit={submitCity}>
             <TextInput label="城市名" value={resourceForm.cityName} onChange={(value) => setResourceForm((form) => ({ ...form, cityName: value }))} />
             <TextInput label="城市代码" value={resourceForm.cityCode} onChange={(value) => setResourceForm((form) => ({ ...form, cityCode: value.toUpperCase() }))} />
             <TextInput label="国家" value={resourceForm.country} onChange={(value) => setResourceForm((form) => ({ ...form, country: value }))} />
             <button type="button" className="mini-button ghost" onClick={() => safeDisableNotice('City')}>不删除</button>
           </ResourceCard>
-          <ResourceCard title="机场 POST /admin/airport/update" onSubmit={submitAirport}>
+          <ResourceCard title="机场" onSubmit={submitAirport}>
             <TextInput label="机场代码" value={resourceForm.airportCode} onChange={(value) => setResourceForm((form) => ({ ...form, airportCode: value.toUpperCase() }))} />
             <TextInput label="机场名" value={resourceForm.airportName} onChange={(value) => setResourceForm((form) => ({ ...form, airportName: value }))} />
             <SelectInput label="城市 ID" value={resourceForm.cityId} options={cities.map((city) => String(city.cityId))} onChange={(value) => setResourceForm((form) => ({ ...form, cityId: value }))} />
             <button type="button" className="mini-button ghost" onClick={() => safeDisableNotice('Airport')}>不删除</button>
           </ResourceCard>
-          <ResourceCard title="飞机 POST /admin/aircraft/update" onSubmit={submitAircraft}>
+          <ResourceCard title="飞机" onSubmit={submitAircraft}>
             <TextInput label="注册号" value={resourceForm.aircraftRegNo} onChange={(value) => setResourceForm((form) => ({ ...form, aircraftRegNo: value.toUpperCase() }))} />
             <TextInput label="机型" value={resourceForm.aircraftType} onChange={(value) => setResourceForm((form) => ({ ...form, aircraftType: value }))} />
             <TextInput label="制造商" value={resourceForm.manufacturer} onChange={(value) => setResourceForm((form) => ({ ...form, manufacturer: value }))} />
@@ -1429,7 +1423,7 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
             <NumberInput label="经济舱座位" value={resourceForm.totalEconomySeats} onChange={(value) => setResourceForm((form) => ({ ...form, totalEconomySeats: value }))} />
             <button type="button" className="mini-button" onClick={() => void disableAircraft(resourceForm.aircraftRegNo).then(refreshAll).then(() => notify('飞机已停用', 'success')).catch((error) => notify(error instanceof Error ? error.message : '停用失败', 'error'))}>停用</button>
           </ResourceCard>
-          <ResourceCard title="餐食 POST /admin/meal/update" onSubmit={submitMeal}>
+          <ResourceCard title="餐食" onSubmit={submitMeal}>
             <TextInput label="餐食名" value={mealForm.mealName} onChange={(value) => setMealForm((form) => ({ ...form, mealName: value }))} />
             <TextInput label="类型" value={mealForm.mealType} onChange={(value) => setMealForm((form) => ({ ...form, mealType: value.toUpperCase() }))} />
             <TextInput label="描述" value={mealForm.description} onChange={(value) => setMealForm((form) => ({ ...form, description: value }))} />
@@ -1446,7 +1440,7 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
       {tab === 'tickets' && (
         <section className="admin-content two-panel">
           <DataTable
-            title="用户列表 GET /admin/user/list"
+            title="用户列表"
             rows={users.slice(0, 10).map((rawItem) => {
               const item = { ...rawItem, userName: maskUserName(rawItem.userName) };
               return ({
@@ -1457,7 +1451,7 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
             })}
           />
           <DataTable
-            title="订单列表 GET /admin/ticket/list"
+            title="订单列表"
             rows={tickets.slice(0, 14).map((ticket) => ({
               key: String(ticket.ticketId),
               main: `#${ticket.ticketId} ${ticket.orderNo}`,
