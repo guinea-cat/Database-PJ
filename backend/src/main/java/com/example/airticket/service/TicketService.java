@@ -83,6 +83,7 @@ public class TicketService {
                 .orElseThrow(() -> new BusinessException(40406, "segment not found"));
         ensureSegmentBelongsToFlight(segment, flight);
         CabinClass cabinClass = parseCabinClass(request.cabinClass);
+        ensureNoActiveDuplicateTicket(user.userId, flight.flightId);
         BigDecimal price = priceFor(segment, cabinClass);
         deductInventory(segment, cabinClass);
 
@@ -294,6 +295,17 @@ public class TicketService {
     private void ensureSegmentBelongsToFlight(FlightSegment segment, Flight flight) {
         if (segment.flight == null || !segment.flight.flightId.equals(flight.flightId)) {
             throw new BusinessException(41004, "segment does not belong to flight");
+        }
+    }
+
+    private void ensureNoActiveDuplicateTicket(Integer userId, Integer flightId) {
+        boolean exists = ticketRepository.existsByUserUserIdAndFlightFlightIdAndTicketStatusIn(
+                userId,
+                flightId,
+                List.of(TicketStatus.PENDING_PAYMENT, TicketStatus.PAID)
+        );
+        if (exists) {
+            throw new BusinessException(42020, "不可重复购票");
         }
     }
 

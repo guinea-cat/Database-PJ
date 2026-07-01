@@ -4,11 +4,13 @@ import {
   airportCodeLabel,
   changeChainText,
   changeTargetPrice,
+  deductSeatFromFlights,
   filterChangeTargets,
   formatForDateTimeLocal,
   formatMoney,
   maskUserName,
   orderRouteSummary,
+  prependTicketIfMissing,
   roleHome,
   statusText,
   validateRegisterForm,
@@ -139,6 +141,30 @@ describe('display helpers', () => {
 
     expect(changeTargetPrice(target, 'ECONOMY')).toBe(800);
     expect(changeTargetPrice(target, 'FIRST_CLASS')).toBe(1800);
+  });
+
+  it('prepends a newly created ticket without duplicating an existing one', () => {
+    const existing = { ticketId: 1, orderNo: 'ORD1', ticketStatus: 'PENDING_PAYMENT' as const, userId: 2, flightId: 10, segmentId: 100, cabinClass: 'ECONOMY' as const, passengerName: 'A', priceAmount: 800, paymentAmount: 800 };
+    const next = { ticketId: 2, orderNo: 'ORD2', ticketStatus: 'PENDING_PAYMENT' as const, userId: 2, flightId: 11, segmentId: 101, cabinClass: 'ECONOMY' as const, passengerName: 'A', priceAmount: 900, paymentAmount: 900 };
+
+    expect(prependTicketIfMissing([existing], next).map((ticket) => ticket.ticketId)).toEqual([2, 1]);
+    expect(prependTicketIfMissing([existing], existing)).toHaveLength(1);
+  });
+
+  it('deducts the selected cabin seat from the matching flight segment only', () => {
+    const flights = [
+      { flightId: 10, flightNumber: 'A', flightDate: '2026-07-01', flightStatus: 'NORMAL' as const, aircraftRegNo: 'B-1', departureAirportCode: 'PEK', arrivalAirportCode: 'SHA', segmentId: 100, originStopNo: 1, destinationStopNo: 2, originAirportCode: 'PEK', destinationAirportCode: 'SHA', plannedDepartureTime: '2026-07-01T08:00:00', plannedArrivalTime: '2026-07-01T10:00:00', firstClassRemainingSeats: 1, economyRemainingSeats: 3, firstClassPrice: 1800, economyPrice: 800, isSpecialOffer: false, isAvailable: true },
+      { flightId: 11, flightNumber: 'B', flightDate: '2026-07-01', flightStatus: 'NORMAL' as const, aircraftRegNo: 'B-2', departureAirportCode: 'PEK', arrivalAirportCode: 'SHA', segmentId: 101, originStopNo: 1, destinationStopNo: 2, originAirportCode: 'PEK', destinationAirportCode: 'SHA', plannedDepartureTime: '2026-07-01T11:00:00', plannedArrivalTime: '2026-07-01T13:00:00', firstClassRemainingSeats: 2, economyRemainingSeats: 4, firstClassPrice: 1800, economyPrice: 800, isSpecialOffer: false, isAvailable: true },
+    ];
+
+    const afterEconomy = deductSeatFromFlights(flights, 100, 'ECONOMY');
+    expect(afterEconomy[0].economyRemainingSeats).toBe(2);
+    expect(afterEconomy[0].firstClassRemainingSeats).toBe(1);
+    expect(afterEconomy[1].economyRemainingSeats).toBe(4);
+
+    const afterFirst = deductSeatFromFlights(flights, 100, 'FIRST_CLASS');
+    expect(afterFirst[0].firstClassRemainingSeats).toBe(0);
+    expect(afterFirst[0].economyRemainingSeats).toBe(3);
   });
 
   it('formats change history as a readable order chain', () => {

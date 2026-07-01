@@ -31,7 +31,9 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -116,6 +118,67 @@ class TicketServiceTest {
 
         assertThat(saved.priceAmount).isEqualByComparingTo("500.00");
         assertThat(saved.paymentAmount).isEqualByComparingTo("450.00");
+    }
+
+    @Test
+    void createTicketRejectsDuplicatePendingTicketForSameAccountFlight() {
+        User passenger = user(1, 0, MemberLevel.NORMAL);
+        Flight flight = flight(10);
+        FlightSegment segment = segment(20, flight);
+        CreateTicketRequest request = validCreateTicketRequest();
+
+        when(userRepository.findById(1)).thenReturn(Optional.of(passenger));
+        when(flightRepository.findById(10)).thenReturn(Optional.of(flight));
+        when(segmentRepository.findByIdForUpdate(20)).thenReturn(Optional.of(segment));
+        when(ticketRepository.existsByUserUserIdAndFlightFlightIdAndTicketStatusIn(eq(1), eq(10), any())).thenReturn(true);
+
+        assertThatThrownBy(() -> ticketService.createTicket(request))
+                .isInstanceOf(com.example.airticket.exception.BusinessException.class)
+                .satisfies(ex -> {
+                    com.example.airticket.exception.BusinessException business = (com.example.airticket.exception.BusinessException) ex;
+                    assertThat(business.code).isEqualTo(42020);
+                    assertThat(business.getMessage()).isEqualTo("不可重复购票");
+                });
+        assertThat(segment.economyRemainingSeats).isEqualTo(5);
+        verify(ticketRepository, never()).save(any(TicketSale.class));
+    }
+
+    @Test
+    void createTicketRejectsDuplicatePaidTicketForSameAccountFlight() {
+        User passenger = user(1, 0, MemberLevel.NORMAL);
+        Flight flight = flight(10);
+        FlightSegment segment = segment(20, flight);
+        CreateTicketRequest request = validCreateTicketRequest();
+
+        when(userRepository.findById(1)).thenReturn(Optional.of(passenger));
+        when(flightRepository.findById(10)).thenReturn(Optional.of(flight));
+        when(segmentRepository.findByIdForUpdate(20)).thenReturn(Optional.of(segment));
+        when(ticketRepository.existsByUserUserIdAndFlightFlightIdAndTicketStatusIn(eq(1), eq(10), any())).thenReturn(true);
+
+        assertThatThrownBy(() -> ticketService.createTicket(request))
+                .isInstanceOf(com.example.airticket.exception.BusinessException.class)
+                .satisfies(ex -> assertThat(((com.example.airticket.exception.BusinessException) ex).code).isEqualTo(42020));
+        assertThat(segment.economyRemainingSeats).isEqualTo(5);
+        verify(ticketRepository, never()).save(any(TicketSale.class));
+    }
+
+    @Test
+    void createTicketAllowsPurchaseWhenNoActiveDuplicateExists() {
+        User passenger = user(1, 0, MemberLevel.NORMAL);
+        Flight flight = flight(10);
+        FlightSegment segment = segment(20, flight);
+        CreateTicketRequest request = validCreateTicketRequest();
+
+        when(userRepository.findById(1)).thenReturn(Optional.of(passenger));
+        when(flightRepository.findById(10)).thenReturn(Optional.of(flight));
+        when(segmentRepository.findByIdForUpdate(20)).thenReturn(Optional.of(segment));
+        when(ticketRepository.existsByUserUserIdAndFlightFlightIdAndTicketStatusIn(eq(1), eq(10), any())).thenReturn(false);
+        when(ticketRepository.save(any(TicketSale.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        TicketSale saved = ticketService.createTicket(request);
+
+        assertThat(saved.ticketStatus).isEqualTo(TicketStatus.PENDING_PAYMENT);
+        assertThat(segment.economyRemainingSeats).isEqualTo(4);
     }
 
     @Test

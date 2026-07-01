@@ -161,3 +161,28 @@ export function changeTargetPrice(
 ) {
   return cabinClass === 'FIRST_CLASS' ? target.firstClassPrice : target.economyPrice;
 }
+
+export function prependTicketIfMissing(tickets: Ticket[], ticket: Ticket) {
+  if (tickets.some((item) => item.ticketId === ticket.ticketId)) {
+    return tickets;
+  }
+  return [ticket, ...tickets];
+}
+
+export function deductSeatFromFlights(flights: FlightSearchItem[], segmentId: number, cabinClass: CabinClass) {
+  return flights.map((flight) => {
+    if (flight.segmentId !== segmentId) {
+      return flight;
+    }
+    if (cabinClass === 'FIRST_CLASS') {
+      return {
+        ...flight,
+        firstClassRemainingSeats: Math.max(0, flight.firstClassRemainingSeats - 1),
+      };
+    }
+    return {
+      ...flight,
+      economyRemainingSeats: Math.max(0, flight.economyRemainingSeats - 1),
+    };
+  });
+}

@@ -64,12 +64,14 @@ import {
   cabinText,
   changeChainText,
   changeTargetPrice,
+  deductSeatFromFlights,
   filterChangeTargets,
   formatDateTime,
   formatForDateTimeLocal,
   formatMoney,
   maskUserName,
   orderRouteSummary,
+  prependTicketIfMissing,
   roleHome,
   shortTime,
   statusText,
@@ -551,17 +553,26 @@ function PassengerWorkspace({
     }
     setLoading(true);
     try {
+      const orderedSegmentId = selectedFlight.segmentId;
+      const orderedCabinClass = orderForm.cabinClass;
       const ticket = await createTicket({
         userId: user.userId,
         flightId: selectedFlight.flightId,
-        segmentId: selectedFlight.segmentId,
-        cabinClass: orderForm.cabinClass,
+        segmentId: orderedSegmentId,
+        cabinClass: orderedCabinClass,
         passengerName: orderForm.passengerName,
         passengerIdNumber: orderForm.passengerIdNumber,
         mealId: orderForm.mealId ? Number(orderForm.mealId) : undefined,
       });
       setSelectedTicket(ticket);
-      await refreshTickets();
+      setTickets((current) => prependTicketIfMissing(current, ticket));
+      setFlights((current) => deductSeatFromFlights(current, orderedSegmentId, orderedCabinClass));
+      setSelectedFlight((current) => {
+        if (!current || current.segmentId !== orderedSegmentId) {
+          return current;
+        }
+        return deductSeatFromFlights([current], orderedSegmentId, orderedCabinClass)[0];
+      });
       notify(`订单 ${ticket.orderNo} 已创建，请在 15 分钟内支付`, 'success');
     } catch (error) {
       notify(error instanceof Error ? error.message : '下单失败', 'error');
