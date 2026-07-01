@@ -1,10 +1,10 @@
 # 航空票务数据库系统
 
-> **复旦大学 2024-2025 学年 · 数据库及其实现课程项目 · Group 22**
+> Fudan University 2024-2025 Academic Year · Database and Implementation Course Project · Group 22
 
-这是复旦大学2025-2026学年第一学期《数据库及实现》课程Group 22的Project——航空票务数据库系统，覆盖航班检索、票务交易（下单/支付/退票/改签）、会员积分与管理员资源维护。
+This is the project for Group 22 of the "Database and Implementation" course during the first semester of the 2025-2026 academic year at Fudan University—an Airline Ticketing Database System. It covers flight search, ticketing transactions (booking, payment, refund, and rescheduling), membership points, and administrator resource maintenance.
 
-成员：杜诚俊 何韵琳 吴沁远 杨子卿
+Members: Chengjun Du, Yunlin He, Qinyuan Wu, Ziqing Ya
 
 ---
 
