@@ -12,7 +12,12 @@ import com.example.airticket.entity.City;
 import com.example.airticket.entity.Flight;
 import com.example.airticket.entity.FlightSegment;
 import com.example.airticket.entity.MealOption;
+import com.example.airticket.entity.TicketSale;
+import com.example.airticket.entity.User;
+import com.example.airticket.enums.CabinClass;
 import com.example.airticket.enums.FlightStatus;
+import com.example.airticket.enums.MemberLevel;
+import com.example.airticket.enums.TicketStatus;
 import com.example.airticket.exception.BusinessException;
 import com.example.airticket.repository.AircraftRepository;
 import com.example.airticket.repository.AirportRepository;
@@ -34,6 +39,10 @@ import java.util.Map;
 @Service
 public class AdminService {
     private static final Logger log = LoggerFactory.getLogger(AdminService.class);
+    private static final int TICKET_REWARD_POINTS = 100;
+    private static final int VIP_THRESHOLD = 1000;
+    private static final String FLIGHT_DISABLED_REFUND_REMARK = "航班已停用，系统自动退款";
+    private static final String FLIGHT_DISABLED_EXPIRE_REMARK = "航班已停用，订单自动关闭";
 
     private final UserRepository userRepository;
     private final CityRepository cityRepository;
@@ -176,7 +185,22 @@ public class AdminService {
         Flight flight = flightRepository.findById(flightId)
                 .orElseThrow(() -> new BusinessException(40405, "航班不存在"));
         flight.flightStatus = FlightStatus.DISABLED;
-        log.info("admin.disableFlight flightId={}", flightId);
+        List<TicketSale> activeTickets = ticketRepository.findByFlightFlightIdAndTicketStatusIn(
+                flightId,
+                List.of(TicketStatus.PAID, TicketStatus.PENDING_PAYMENT)
+        );
+        int refunded = 0;
+        int expired = 0;
+        for (TicketSale ticket : activeTickets) {
+            if (ticket.ticketStatus == TicketStatus.PAID) {
+                autoRefundPaidTicket(ticket);
+                refunded++;
+            } else if (ticket.ticketStatus == TicketStatus.PENDING_PAYMENT) {
+                autoExpirePendingTicket(ticket);
+                expired++;
+            }
+        }
+        log.info("admin.disableFlight flightId={} refundedTickets={} expiredTickets={}", flightId, refunded, expired);
         return flight;
     }
 
@@ -282,5 +306,42 @@ public class AdminService {
             return FlightStatus.NORMAL;
         }
         return FlightStatus.valueOf(status);
+    }
+
+    private void autoRefundPaidTicket(TicketSale ticket) {
+        restoreInventory(ticket.segment, ticket.cabinClass);
+        ticket.ticketStatus = TicketStatus.REFUND_SUCCESS;
+        ticket.refundedAt = java.time.LocalDateTime.now();
+        ticket.remark = FLIGHT_DISABLED_REFUND_REMARK;
+        User user = ticket.user;
+        if (user != null) {
+            user.points = Math.max(0, safePoints(user) - TICKET_REWARD_POINTS);
+            refreshMemberLevel(user);
+        }
+    }
+
+    private void autoExpirePendingTicket(TicketSale ticket) {
+        restoreInventory(ticket.segment, ticket.cabinClass);
+        ticket.ticketStatus = TicketStatus.EXPIRED;
+        ticket.remark = FLIGHT_DISABLED_EXPIRE_REMARK;
+    }
+
+    private void restoreInventory(FlightSegment segment, CabinClass cabinClass) {
+        if (segment == null || cabinClass == null) {
+            return;
+        }
+        if (cabinClass == CabinClass.ECONOMY) {
+            segment.economyRemainingSeats = (segment.economyRemainingSeats == null ? 0 : segment.economyRemainingSeats) + 1;
+        } else {
+            segment.firstClassRemainingSeats = (segment.firstClassRemainingSeats == null ? 0 : segment.firstClassRemainingSeats) + 1;
+        }
+    }
+
+    private int safePoints(User user) {
+        return user.points == null ? 0 : user.points;
+    }
+
+    private void refreshMemberLevel(User user) {
+        user.memberLevel = safePoints(user) >= VIP_THRESHOLD ? MemberLevel.VIP : MemberLevel.NORMAL;
     }
 }

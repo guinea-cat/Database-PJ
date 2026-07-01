@@ -12,6 +12,7 @@ import {
   formatForDateTimeLocal,
   formatMoney,
   maskUserName,
+  flightDisabledTicketNotice,
   orderRouteSummary,
   prependTicketIfMissing,
   replaceTicket,
@@ -264,5 +265,28 @@ describe('admin list helpers', () => {
     expect(clampPage('8', 5)).toBe(5);
     expect(clampPage('abc', 5)).toBe(1);
     expect(clampPage(2, 0)).toBe(1);
+  });
+});
+
+describe('flight disabled ticket notice', () => {
+  it('shows an auto refund notice for tickets refunded because a flight was disabled', () => {
+    expect(flightDisabledTicketNotice({
+      ticketStatus: 'REFUND_SUCCESS',
+      remark: '航班已停用，系统自动退款',
+    })).toBe('航班已停用，系统已自动退款');
+  });
+
+  it('shows a closed pending order notice for tickets expired because a flight was disabled', () => {
+    expect(flightDisabledTicketNotice({
+      ticketStatus: 'EXPIRED',
+      remark: '航班已停用，订单自动关闭',
+    })).toBe('航班已停用，待支付订单已关闭');
+  });
+
+  it('does not show a disabled flight notice for ordinary refunds', () => {
+    expect(flightDisabledTicketNotice({
+      ticketStatus: 'REFUND_SUCCESS',
+      remark: '乘客主动退票',
+    })).toBeNull();
   });
 });

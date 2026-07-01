@@ -4,7 +4,12 @@ import com.example.airticket.dto.request.SegmentSaveRequest;
 import com.example.airticket.entity.Airport;
 import com.example.airticket.entity.Flight;
 import com.example.airticket.entity.FlightSegment;
+import com.example.airticket.entity.TicketSale;
+import com.example.airticket.entity.User;
+import com.example.airticket.enums.CabinClass;
 import com.example.airticket.enums.FlightStatus;
+import com.example.airticket.enums.MemberLevel;
+import com.example.airticket.enums.TicketStatus;
 import com.example.airticket.exception.BusinessException;
 import com.example.airticket.repository.AircraftRepository;
 import com.example.airticket.repository.AirportRepository;
@@ -19,18 +24,22 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class AdminServiceTest {
     private FlightRepository flightRepository;
     private FlightSegmentRepository segmentRepository;
     private AirportRepository airportRepository;
+    private TicketSaleRepository ticketRepository;
     private AdminService adminService;
 
     @BeforeEach
@@ -42,7 +51,7 @@ class AdminServiceTest {
         flightRepository = mock(FlightRepository.class);
         segmentRepository = mock(FlightSegmentRepository.class);
         MealOptionRepository mealRepository = mock(MealOptionRepository.class);
-        TicketSaleRepository ticketRepository = mock(TicketSaleRepository.class);
+        ticketRepository = mock(TicketSaleRepository.class);
         adminService = new AdminService(userRepository, cityRepository, airportRepository, aircraftRepository,
                 flightRepository, segmentRepository, mealRepository, ticketRepository);
     }
@@ -57,6 +66,38 @@ class AdminServiceTest {
         Flight enabled = adminService.enableFlight(10);
 
         assertThat(enabled.flightStatus).isEqualTo(FlightStatus.NORMAL);
+    }
+
+    @Test
+    void disableFlightAutoRefundsPaidTicketsAndClosesPendingTickets() {
+        Flight flight = new Flight();
+        flight.flightId = 10;
+        flight.flightStatus = FlightStatus.NORMAL;
+        User user = new User();
+        user.userId = 1;
+        user.points = 100;
+        user.memberLevel = MemberLevel.NORMAL;
+        FlightSegment paidSegment = segmentForTicket(20, flight, 4, 8);
+        FlightSegment pendingSegment = segmentForTicket(21, flight, 2, 6);
+        TicketSale paid = ticket(100, user, flight, paidSegment, TicketStatus.PAID, CabinClass.ECONOMY);
+        TicketSale pending = ticket(101, user, flight, pendingSegment, TicketStatus.PENDING_PAYMENT, CabinClass.FIRST_CLASS);
+
+        when(flightRepository.findById(10)).thenReturn(Optional.of(flight));
+        when(ticketRepository.findByFlightFlightIdAndTicketStatusIn(eq(10), any()))
+                .thenReturn(List.of(paid, pending));
+
+        adminService.disableFlight(10);
+
+        assertThat(flight.flightStatus).isEqualTo(FlightStatus.DISABLED);
+        assertThat(paid.ticketStatus).isEqualTo(TicketStatus.REFUND_SUCCESS);
+        assertThat(paid.refundedAt).isNotNull();
+        assertThat(paid.remark).isEqualTo("航班已停用，系统自动退款");
+        assertThat(paidSegment.economyRemainingSeats).isEqualTo(9);
+        assertThat(user.points).isZero();
+        assertThat(pending.ticketStatus).isEqualTo(TicketStatus.EXPIRED);
+        assertThat(pending.remark).isEqualTo("航班已停用，订单自动关闭");
+        assertThat(pendingSegment.firstClassRemainingSeats).isEqualTo(3);
+        verify(ticketRepository).findByFlightFlightIdAndTicketStatusIn(eq(10), any());
     }
 
     @Test
@@ -149,5 +190,25 @@ class AdminServiceTest {
         request.firstClassPrice = new BigDecimal("1500.00");
         request.economyPrice = new BigDecimal("800.00");
         return request;
+    }
+
+    private FlightSegment segmentForTicket(int id, Flight flight, int firstClassSeats, int economySeats) {
+        FlightSegment segment = new FlightSegment();
+        segment.segmentId = id;
+        segment.flight = flight;
+        segment.firstClassRemainingSeats = firstClassSeats;
+        segment.economyRemainingSeats = economySeats;
+        return segment;
+    }
+
+    private TicketSale ticket(int id, User user, Flight flight, FlightSegment segment, TicketStatus status, CabinClass cabinClass) {
+        TicketSale ticket = new TicketSale();
+        ticket.ticketId = id;
+        ticket.user = user;
+        ticket.flight = flight;
+        ticket.segment = segment;
+        ticket.ticketStatus = status;
+        ticket.cabinClass = cabinClass;
+        return ticket;
     }
 }

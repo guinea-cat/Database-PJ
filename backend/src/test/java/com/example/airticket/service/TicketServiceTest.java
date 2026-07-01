@@ -218,6 +218,7 @@ class TicketServiceTest {
         TicketSale ticket = new TicketSale();
         ticket.ticketId = 100;
         ticket.user = passenger;
+        ticket.flight = flight(10);
         ticket.ticketStatus = TicketStatus.PENDING_PAYMENT;
         ticket.expiredAt = LocalDateTime.now().plusMinutes(5);
         ticket.paymentAmount = new BigDecimal("1000.00");
@@ -233,6 +234,28 @@ class TicketServiceTest {
         assertThat(paid.paidAt).isNotNull();
         assertThat(passenger.points).isEqualTo(1000);
         assertThat(passenger.memberLevel).isEqualTo(MemberLevel.VIP);
+    }
+
+    @Test
+    void payTicketRejectsPendingOrderWhenFlightWasDisabledAfterBooking() {
+        User passenger = user(1, 0, MemberLevel.NORMAL);
+        Flight disabledFlight = flight(10);
+        disabledFlight.flightStatus = FlightStatus.DISABLED;
+        TicketSale ticket = new TicketSale();
+        ticket.ticketId = 100;
+        ticket.user = passenger;
+        ticket.flight = disabledFlight;
+        ticket.ticketStatus = TicketStatus.PENDING_PAYMENT;
+        ticket.expiredAt = LocalDateTime.now().plusMinutes(5);
+        PayTicketRequest request = new PayTicketRequest();
+        request.ticketId = 100;
+
+        when(ticketRepository.findByIdForUpdate(100)).thenReturn(Optional.of(ticket));
+
+        assertThatThrownBy(() -> ticketService.payTicket(request))
+                .isInstanceOf(com.example.airticket.exception.BusinessException.class)
+                .satisfies(ex -> assertThat(((com.example.airticket.exception.BusinessException) ex).code).isEqualTo(41001));
+        assertThat(ticket.ticketStatus).isEqualTo(TicketStatus.PENDING_PAYMENT);
     }
 
     @Test
@@ -272,6 +295,32 @@ class TicketServiceTest {
         assertThat(changeTicket.ticketStatus).isEqualTo(TicketStatus.PENDING_PAYMENT);
         assertThat(changeTicket.paymentAmount).isEqualByComparingTo("180.00");
         verify(segmentRepository).findByIdForUpdate(21);
+    }
+
+    @Test
+    void payChangeRejectsPendingChangeOrderWhenTargetFlightWasDisabled() {
+        User passenger = user(1, 0, MemberLevel.NORMAL);
+        Flight oldFlight = flight(10);
+        Flight disabledTargetFlight = flight(11);
+        disabledTargetFlight.flightStatus = FlightStatus.DISABLED;
+        FlightSegment oldSegment = segment(20, oldFlight);
+        FlightSegment newSegment = segment(21, disabledTargetFlight);
+        TicketSale oldTicket = paidTicket(passenger, oldFlight, oldSegment, CabinClass.ECONOMY, "1000.00", "1000.00");
+        TicketSale newTicket = paidTicket(passenger, disabledTargetFlight, newSegment, CabinClass.ECONOMY, "1200.00", "200.00");
+        newTicket.ticketId = 101;
+        newTicket.originalTicket = oldTicket;
+        newTicket.ticketStatus = TicketStatus.PENDING_PAYMENT;
+        newTicket.expiredAt = LocalDateTime.now().plusMinutes(5);
+        com.example.airticket.dto.request.ChangePayRequest request = new com.example.airticket.dto.request.ChangePayRequest();
+        request.ticketId = 101;
+
+        when(ticketRepository.findByIdForUpdate(101)).thenReturn(Optional.of(newTicket));
+
+        assertThatThrownBy(() -> ticketService.payChange(request))
+                .isInstanceOf(com.example.airticket.exception.BusinessException.class)
+                .satisfies(ex -> assertThat(((com.example.airticket.exception.BusinessException) ex).code).isEqualTo(41001));
+        assertThat(newTicket.ticketStatus).isEqualTo(TicketStatus.PENDING_PAYMENT);
+        assertThat(oldTicket.ticketStatus).isEqualTo(TicketStatus.PAID);
     }
 
     @Test

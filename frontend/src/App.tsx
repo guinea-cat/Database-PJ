@@ -69,6 +69,7 @@ import {
   filterAdminFlights,
   filterAdminSegments,
   filterChangeTargets,
+  flightDisabledTicketNotice,
   formatDateTime,
   formatForDateTimeLocal,
   formatMoney,
@@ -866,6 +867,7 @@ function PassengerWorkspace({
                   <span>{orderRouteSummary(ticket, ticket, airportLookup)} · {cabinText(ticket.cabinClass)}</span>
                   {ticket.isSpecialOffer && <span className="ticket-special">特价票</span>}
                   <em>原价 {formatMoney(ticket.priceAmount)} · 实付 {formatMoney(ticket.paymentAmount)}</em>
+                  <TicketDisabledNotice ticket={ticket} />
                 </div>
                 <div className="row-actions">
                   {ticket.ticketStatus === 'PENDING_PAYMENT' && (
@@ -1604,6 +1606,14 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
       )}
     </main>
   );
+}
+
+function TicketDisabledNotice({ ticket }: { ticket: Ticket }) {
+  const notice = flightDisabledTicketNotice(ticket);
+  if (!notice) {
+    return null;
+  }
+  return <b className="ticket-alert">{notice}</b>;
 }
 
 function Kpi({ label, value }: { label: string; value: number }) {

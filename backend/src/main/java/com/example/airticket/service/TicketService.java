@@ -112,6 +112,7 @@ public class TicketService {
         TicketSale ticket = ticketRepository.findByIdForUpdate(request.ticketId)
                 .orElseThrow(() -> new BusinessException(40407, "ticket not found"));
         ensurePending(ticket);
+        ensureFlightSellable(ticket.flight);
         if (ticket.expiredAt != null && LocalDateTime.now().isAfter(ticket.expiredAt)) {
             expireLockedTicket(ticket);
             throw new BusinessException(42005, "order expired");
@@ -207,6 +208,7 @@ public class TicketService {
         if (newTicket.originalTicket == null) {
             throw new BusinessException(42014, "change ticket missing original ticket");
         }
+        ensureFlightSellable(newTicket.flight);
         if (newTicket.expiredAt != null && LocalDateTime.now().isAfter(newTicket.expiredAt)) {
             expireLockedTicket(newTicket);
             throw new BusinessException(42017, "change order expired");

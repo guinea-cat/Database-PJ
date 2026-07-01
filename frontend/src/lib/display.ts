@@ -135,6 +135,19 @@ export function changeChainText(ticket: Ticket | Pick<Ticket, 'orderNo' | 'origi
   return `由原订单改签生成：新订单 ${ticket.orderNo}`;
 }
 
+export function flightDisabledTicketNotice(ticket: Pick<Ticket, 'ticketStatus' | 'remark'>) {
+  if (!ticket.remark?.includes('航班已停用')) {
+    return null;
+  }
+  if (ticket.ticketStatus === 'REFUND_SUCCESS') {
+    return '航班已停用，系统已自动退款';
+  }
+  if (ticket.ticketStatus === 'EXPIRED') {
+    return '航班已停用，待支付订单已关闭';
+  }
+  return null;
+}
+
 export function filterChangeTargets(
   ticket: Pick<Ticket, 'segmentId' | 'flightDate' | 'originAirportCode' | 'destinationAirportCode' | 'cabinClass'>,
   candidates: FlightSearchItem[],

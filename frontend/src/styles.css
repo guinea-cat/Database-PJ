@@ -983,6 +983,19 @@ select:focus {
   font-weight: 900;
 }
 
+.ticket-alert {
+  display: block;
+  width: fit-content;
+  margin-top: 8px;
+  padding: 6px 10px;
+  color: #2d0900;
+  background: linear-gradient(135deg, #ffd38a, var(--amber));
+  border: 1px solid rgba(255, 224, 150, 0.7);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 950;
+}
+
 .ticket-special {
   display: inline-flex;
   width: fit-content;

@@ -23,6 +23,8 @@ public interface TicketSaleRepository extends JpaRepository<TicketSale, Integer>
 
     List<TicketSale> findByTicketStatusAndExpiredAtBefore(TicketStatus ticketStatus, LocalDateTime expiredAt);
 
+    List<TicketSale> findByFlightFlightIdAndTicketStatusIn(Integer flightId, Collection<TicketStatus> ticketStatuses);
+
     boolean existsByUserUserIdAndFlightFlightIdAndTicketStatusIn(Integer userId, Integer flightId, Collection<TicketStatus> ticketStatuses);
 
     long countByFlightFlightId(Integer flightId);
