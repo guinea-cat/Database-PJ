@@ -2,10 +2,10 @@
 """Concurrent booking demo for the airline ticketing project.
 
 Demo goal:
-1. Prepare 100 real passenger accounts.
+1. Prepare 50 real passenger accounts.
 2. Make them concurrently book the same MU2001 PEK -> SHA first-class segment.
 3. Show that only the 5 available seats can create orders.
-4. Pay the 5 successful orders, wait 30 seconds, then refund them to restore stock.
+4. Pay the 5 successful orders, wait 15 seconds, then refund them to restore stock.
 
 The script uses only Python standard library modules so it works on classroom
 machines without installing requests.
@@ -26,9 +26,9 @@ from typing import Any
 
 
 DEFAULT_BASE_URL = "http://localhost:8080"
-DEFAULT_TOTAL_USERS = 100
+DEFAULT_TOTAL_USERS = 50
 DEFAULT_STOCK = 5
-DEFAULT_REFUND_DELAY = 30
+DEFAULT_REFUND_DELAY = 15
 DEFAULT_PASSWORD = "pass123"
 
 
@@ -91,7 +91,7 @@ def require_success(response: dict[str, Any], action: str) -> Any:
 
 
 def id_number_for(index: int) -> str:
-    # Valid 18-character demo ID number. Birth date is 1990-01-01, unique sequence is 001-100.
+    # Valid 18-character demo ID number. Birth date is 1990-01-01, unique sequence is 001-50.
     return f"11010119900101{index:04d}"
 
 
@@ -218,7 +218,7 @@ def first_class_stock(base_url: str, segment_id: int) -> int:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="航空票务系统并发抢票演示脚本")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="Backend base URL, default: http://localhost:8080")
-    parser.add_argument("--total", type=int, default=DEFAULT_TOTAL_USERS, help="Concurrent passenger count, default: 100")
+    parser.add_argument("--total", type=int, default=DEFAULT_TOTAL_USERS, help="Concurrent passenger count, default: 50")
     parser.add_argument("--expected-stock", type=int, default=DEFAULT_STOCK, help="Expected first-class stock, default: 5")
     parser.add_argument("--refund-delay", type=int, default=DEFAULT_REFUND_DELAY, help="Seconds before refunding successful tickets, default: 30")
     parser.add_argument("--flight-number", default="MU2001", help="Target flight number, default: MU2001")
@@ -249,7 +249,7 @@ def main() -> int:
             print("建议先重置演示数据并重新执行 seed_data.sql，再运行本脚本。")
 
         print("-" * 72)
-        print("准备 100 个合法乘客账号，不存在则注册，已存在则登录复用。")
+        print("准备 50 个合法乘客账号，不存在则注册，已存在则登录复用。")
         users = prepare_users(args.base_url, args.total)
         print(f"乘客账号准备完成：{len(users)}")
 
