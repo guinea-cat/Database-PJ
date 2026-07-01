@@ -4,6 +4,7 @@ import com.example.airticket.dto.response.TicketResponse;
 import com.example.airticket.entity.Flight;
 import com.example.airticket.entity.FlightSegment;
 import com.example.airticket.entity.TicketSale;
+import com.example.airticket.entity.User;
 import com.example.airticket.enums.CabinClass;
 import com.example.airticket.enums.FlightStatus;
 import com.example.airticket.enums.TicketStatus;
@@ -31,9 +32,15 @@ class TicketResponseTest {
         segment.plannedDepartureTime = LocalDateTime.of(2026, 7, 1, 8, 0);
         segment.plannedArrivalTime = LocalDateTime.of(2026, 7, 1, 10, 0);
 
+        User user = new User();
+        user.userId = 2;
+        user.loginAccount = "passengerA";
+        user.userName = "演示乘客A";
+
         TicketSale ticket = new TicketSale();
         ticket.ticketId = 10001;
         ticket.orderNo = "ORD1";
+        ticket.user = user;
         ticket.flight = flight;
         ticket.segment = segment;
         ticket.ticketStatus = TicketStatus.PAID;
@@ -44,6 +51,8 @@ class TicketResponseTest {
 
         TicketResponse response = TicketResponse.from(ticket);
 
+        assertThat(response.loginAccount).isEqualTo("passengerA");
+        assertThat(response.userName).isEqualTo("演示乘客A");
         assertThat(response.flightNumber).isEqualTo("MU2001");
         assertThat(response.flightDate).isEqualTo(LocalDate.of(2026, 7, 1));
         assertThat(response.originAirportCode).isEqualTo("PEK");

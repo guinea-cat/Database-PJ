@@ -286,3 +286,322 @@
 2026-07-01 09:55:20.551  INFO 24564 --- [http-nio-8080-exec-48] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
 2026-07-01 09:55:35.772  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
 2026-07-01 09:56:35.824  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 09:57:35.836  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 09:58:22.235  INFO 24564 --- [http-nio-8080-exec-45] c.e.airticket.service.AdminService       : admin.disableFlight flightId=1
+2026-07-01 09:58:24.139  INFO 24564 --- [http-nio-8080-exec-37] c.e.airticket.service.AdminService       : admin.enableFlight flightId=1
+2026-07-01 09:58:35.860  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 09:58:59.627  INFO 24564 --- [http-nio-8080-exec-37] c.e.airticket.service.AdminService       : admin.saveSegment segmentId=7 flightId=7 specialOffer=true
+2026-07-01 09:59:06.438  INFO 24564 --- [http-nio-8080-exec-37] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 09:59:35.954  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:00:35.976  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:01:36.008  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:02:36.033  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:03:36.057  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:04:26.480  INFO 24564 --- [http-nio-8080-exec-37] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:04:36.077  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:05:36.090  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:05:43.079  INFO 24564 --- [http-nio-8080-exec-43] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:05:56.197  INFO 24564 --- [http-nio-8080-exec-25] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:06:02.349  INFO 24564 --- [http-nio-8080-exec-45] c.e.airticket.service.AdminService       : admin.disableFlight flightId=7
+2026-07-01 10:06:09.515  INFO 24564 --- [http-nio-8080-exec-45] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:06:20.640  INFO 24564 --- [http-nio-8080-exec-20] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:06:36.108  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:06:37.463  INFO 24564 --- [http-nio-8080-exec-39] c.e.airticket.service.AdminService       : admin.enableFlight flightId=7
+2026-07-01 10:06:42.807  INFO 24564 --- [http-nio-8080-exec-39] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:06:54.412  INFO 24564 --- [http-nio-8080-exec-41] c.e.airticket.service.TicketService      : ticket.create ticketId=3 orderNo=ORD202607011006540027 userId=2 segmentId=7 cabinClass=ECONOMY specialOffer=true priceAmount=5000.00 paymentAmount=5000.00
+2026-07-01 10:06:55.926  INFO 24564 --- [http-nio-8080-exec-32] c.e.airticket.service.TicketService      : ticket.pay ticketId=3 orderNo=ORD202607011006540027 userId=2 points=1000 memberLevel=VIP
+2026-07-01 10:07:04.763  INFO 24564 --- [http-nio-8080-exec-37] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:07:09.438  INFO 24564 --- [http-nio-8080-exec-37] c.e.airticket.service.AdminService       : admin.disableFlight flightId=7
+2026-07-01 10:07:14.688  INFO 24564 --- [http-nio-8080-exec-43] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:07:36.121  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:08:36.149  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:09:25.096  INFO 24564 --- [http-nio-8080-exec-43] c.e.airticket.service.TicketService      : ticket.create ticketId=4 orderNo=ORD202607011009250028 userId=2 segmentId=32 cabinClass=ECONOMY specialOffer=true priceAmount=400.00 paymentAmount=360.00
+2026-07-01 10:09:28.778  INFO 24564 --- [http-nio-8080-exec-39] c.e.airticket.service.TicketService      : ticket.pay ticketId=4 orderNo=ORD202607011009250028 userId=2 points=1100 memberLevel=VIP
+2026-07-01 10:09:35.122  INFO 24564 --- [http-nio-8080-exec-48] c.e.airticket.service.TicketService      : ticket.refund ticketId=4 orderNo=ORD202607011009250028 userId=2 segmentId=32 points=1000
+2026-07-01 10:09:36.163  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:09:40.885  INFO 24564 --- [http-nio-8080-exec-41] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:10:36.206  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:11:36.227  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:12:36.244  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:13:36.260  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:14:36.284  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:15:36.294  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:16:36.317  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:17:36.328  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:18:36.998  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:19:37.731  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:20:37.756  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:21:37.826  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:22:12.869  INFO 24564 --- [http-nio-8080-exec-45] c.example.airticket.service.AuthService  : auth.register userId=4 loginAccount=1 userType=PASSENGER idDigestPrefix=9bd380fc
+2026-07-01 10:22:20.457  INFO 24564 --- [http-nio-8080-exec-32] c.e.airticket.service.TicketService      : ticket.create ticketId=1 orderNo=ORD202607011022200029 userId=4 segmentId=32 cabinClass=ECONOMY specialOffer=true priceAmount=400.00 paymentAmount=400.00
+2026-07-01 10:22:23.769  INFO 24564 --- [http-nio-8080-exec-37] c.e.airticket.service.TicketService      : ticket.pay ticketId=1 orderNo=ORD202607011022200029 userId=4 points=100 memberLevel=NORMAL
+2026-07-01 10:22:29.021  INFO 24564 --- [http-nio-8080-exec-49] c.e.airticket.service.TicketService      : ticket.refund ticketId=1 orderNo=ORD202607011022200029 userId=4 segmentId=32 points=0
+2026-07-01 10:22:37.837  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:22:39.447  INFO 24564 --- [http-nio-8080-exec-39] c.e.airticket.service.TicketService      : ticket.create ticketId=2 orderNo=ORD202607011022390030 userId=4 segmentId=56 cabinClass=ECONOMY specialOffer=true priceAmount=490.00 paymentAmount=490.00
+2026-07-01 10:22:39.917  INFO 24564 --- [http-nio-8080-exec-41] c.e.airticket.service.TicketService      : ticket.create ticketId=3 orderNo=ORD202607011022390031 userId=4 segmentId=56 cabinClass=ECONOMY specialOffer=true priceAmount=490.00 paymentAmount=490.00
+2026-07-01 10:22:42.234  INFO 24564 --- [http-nio-8080-exec-45] c.e.airticket.service.TicketService      : ticket.pay ticketId=2 orderNo=ORD202607011022390030 userId=4 points=100 memberLevel=NORMAL
+2026-07-01 10:22:43.057  INFO 24564 --- [http-nio-8080-exec-37] c.e.airticket.service.TicketService      : ticket.pay ticketId=3 orderNo=ORD202607011022390031 userId=4 points=200 memberLevel=NORMAL
+2026-07-01 10:22:44.390  INFO 24564 --- [http-nio-8080-exec-49] c.e.airticket.service.TicketService      : ticket.refund ticketId=3 orderNo=ORD202607011022390031 userId=4 segmentId=56 points=100
+2026-07-01 10:22:44.896  INFO 24564 --- [http-nio-8080-exec-39] c.e.airticket.service.TicketService      : ticket.refund ticketId=2 orderNo=ORD202607011022390030 userId=4 segmentId=56 points=0
+2026-07-01 10:22:48.350  INFO 24564 --- [http-nio-8080-exec-45] c.e.airticket.service.TicketService      : ticket.create ticketId=4 orderNo=ORD202607011022480032 userId=4 segmentId=250 cabinClass=ECONOMY specialOffer=true priceAmount=510.00 paymentAmount=510.00
+2026-07-01 10:22:50.280  INFO 24564 --- [http-nio-8080-exec-25] c.e.airticket.service.TicketService      : ticket.pay ticketId=4 orderNo=ORD202607011022480032 userId=4 points=100 memberLevel=NORMAL
+2026-07-01 10:22:52.740  INFO 24564 --- [http-nio-8080-exec-41] c.e.airticket.service.TicketService      : ticket.create ticketId=5 orderNo=ORD202607011022520033 userId=4 segmentId=250 cabinClass=ECONOMY specialOffer=true priceAmount=510.00 paymentAmount=510.00
+2026-07-01 10:22:55.323  INFO 24564 --- [http-nio-8080-exec-45] c.e.airticket.service.TicketService      : ticket.refund ticketId=4 orderNo=ORD202607011022480032 userId=4 segmentId=250 points=0
+2026-07-01 10:23:13.053  INFO 24564 --- [http-nio-8080-exec-37] c.e.airticket.service.TicketService      : ticket.create ticketId=6 orderNo=ORD202607011023130034 userId=4 segmentId=248 cabinClass=FIRST_CLASS specialOffer=true priceAmount=1100.00 paymentAmount=1100.00
+2026-07-01 10:23:17.412  INFO 24564 --- [http-nio-8080-exec-20] c.e.airticket.service.TicketService      : ticket.pay ticketId=5 orderNo=ORD202607011022520033 userId=4 points=100 memberLevel=NORMAL
+2026-07-01 10:23:19.453  INFO 24564 --- [http-nio-8080-exec-39] c.e.airticket.service.TicketService      : ticket.pay ticketId=6 orderNo=ORD202607011023130034 userId=4 points=200 memberLevel=NORMAL
+2026-07-01 10:23:29.529  INFO 24564 --- [http-nio-8080-exec-45] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:23:37.857  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:23:51.625  WARN 24564 --- [http-nio-8080-exec-49] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 1062, SQLState: 23000
+2026-07-01 10:23:51.625 ERROR 24564 --- [http-nio-8080-exec-49] o.h.engine.jdbc.spi.SqlExceptionHelper   : Duplicate entry '杭州' for key 'city.CityName'
+2026-07-01 10:24:22.861  INFO 24564 --- [http-nio-8080-exec-48] c.e.airticket.service.AdminService       : admin.saveFlight flightId=10613 flightNumber=AAA status=NORMAL
+2026-07-01 10:24:37.870  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:24:38.931  INFO 24564 --- [http-nio-8080-exec-41] c.e.airticket.service.AdminService       : admin.saveSegment segmentId=612 flightId=10613 specialOffer=true
+2026-07-01 10:24:44.129  INFO 24564 --- [http-nio-8080-exec-41] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:24:56.288  INFO 24564 --- [http-nio-8080-exec-41] c.e.airticket.service.TicketService      : ticket.create ticketId=1 orderNo=ORD202607011024560035 userId=2 segmentId=612 cabinClass=ECONOMY specialOffer=true priceAmount=5000.00 paymentAmount=5000.00
+2026-07-01 10:24:58.106  INFO 24564 --- [http-nio-8080-exec-45] c.e.airticket.service.TicketService      : ticket.pay ticketId=1 orderNo=ORD202607011024560035 userId=2 points=1000 memberLevel=VIP
+2026-07-01 10:24:59.743  INFO 24564 --- [http-nio-8080-exec-37] c.e.airticket.service.TicketService      : ticket.refund ticketId=1 orderNo=ORD202607011024560035 userId=2 segmentId=612 points=900
+2026-07-01 10:25:37.881  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:25:53.201  INFO 24564 --- [http-nio-8080-exec-32] c.example.airticket.service.AuthService  : auth.register userId=4 loginAccount=1 userType=PASSENGER idDigestPrefix=9bd380fc
+2026-07-01 10:26:37.900  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:26:45.590  INFO 24564 --- [http-nio-8080-exec-49] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:27:01.848  INFO 24564 --- [http-nio-8080-exec-48] c.example.airticket.service.AuthService  : auth.loginSuccess userId=3 loginAccount=passengerB userType=PASSENGER
+2026-07-01 10:27:07.706  INFO 24564 --- [http-nio-8080-exec-45] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:27:16.722  INFO 24564 --- [http-nio-8080-exec-20] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:27:30.938  INFO 24564 --- [http-nio-8080-exec-39] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:27:34.056  INFO 24564 --- [http-nio-8080-exec-43] c.e.airticket.service.AdminService       : admin.disableFlight flightId=7
+2026-07-01 10:27:37.917  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:27:38.925  INFO 24564 --- [http-nio-8080-exec-43] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:27:58.059  INFO 24564 --- [http-nio-8080-exec-41] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:28:01.152  INFO 24564 --- [http-nio-8080-exec-45] c.e.airticket.service.AdminService       : admin.enableFlight flightId=7
+2026-07-01 10:28:03.446  INFO 24564 --- [http-nio-8080-exec-45] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:28:12.777  INFO 24564 --- [http-nio-8080-exec-49] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:28:28.557  INFO 24564 --- [http-nio-8080-exec-37] c.e.airticket.service.AdminService       : admin.saveSegment segmentId=7 flightId=7 specialOffer=true
+2026-07-01 10:28:28.563  WARN 24564 --- [http-nio-8080-exec-37] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 1264, SQLState: 22001
+2026-07-01 10:28:28.563 ERROR 24564 --- [http-nio-8080-exec-37] o.h.engine.jdbc.spi.SqlExceptionHelper   : Data truncation: Out of range value for column 'EconomyPrice' at row 1
+2026-07-01 10:28:28.566  INFO 24564 --- [http-nio-8080-exec-37] o.h.e.j.b.internal.AbstractBatchImpl     : HHH000010: On release of batch it still contained JDBC statements
+2026-07-01 10:28:37.930  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:29:37.976  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:30:38.134  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:31:16.619  INFO 24564 --- [http-nio-8080-exec-43] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:31:38.146  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:31:38.581  INFO 24564 --- [http-nio-8080-exec-49] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:31:49.719  INFO 24564 --- [http-nio-8080-exec-45] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:31:53.218  INFO 24564 --- [http-nio-8080-exec-49] c.e.airticket.service.AdminService       : admin.disableFlight flightId=7
+2026-07-01 10:31:58.768  INFO 24564 --- [http-nio-8080-exec-25] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:32:09.220  INFO 24564 --- [http-nio-8080-exec-41] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:32:15.671  WARN 24564 --- [http-nio-8080-exec-49] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 1062, SQLState: 23000
+2026-07-01 10:32:15.673 ERROR 24564 --- [http-nio-8080-exec-49] o.h.engine.jdbc.spi.SqlExceptionHelper   : Duplicate entry '低脂餐' for key 'mealoption.MealName'
+2026-07-01 10:32:16.598  WARN 24564 --- [http-nio-8080-exec-39] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 1062, SQLState: 23000
+2026-07-01 10:32:16.600 ERROR 24564 --- [http-nio-8080-exec-39] o.h.engine.jdbc.spi.SqlExceptionHelper   : Duplicate entry '低脂餐' for key 'mealoption.MealName'
+2026-07-01 10:32:28.226  INFO 24564 --- [http-nio-8080-exec-41] c.e.airticket.service.AdminService       : admin.saveFlight flightId=10613 flightNumber=AAA status=NORMAL
+2026-07-01 10:32:38.162  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:32:43.049  INFO 24564 --- [http-nio-8080-exec-41] c.e.airticket.service.AdminService       : admin.saveSegment segmentId=612 flightId=10613 specialOffer=true
+2026-07-01 10:32:48.264  INFO 24564 --- [http-nio-8080-exec-41] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:32:57.465  INFO 24564 --- [http-nio-8080-exec-32] c.e.airticket.service.TicketService      : ticket.create ticketId=1 orderNo=ORD202607011032570036 userId=2 segmentId=612 cabinClass=ECONOMY specialOffer=true priceAmount=5000.00 paymentAmount=5000.00
+2026-07-01 10:32:59.450  INFO 24564 --- [http-nio-8080-exec-37] c.e.airticket.service.TicketService      : ticket.pay ticketId=1 orderNo=ORD202607011032570036 userId=2 points=1000 memberLevel=VIP
+2026-07-01 10:33:00.724  INFO 24564 --- [http-nio-8080-exec-48] c.e.airticket.service.TicketService      : ticket.refund ticketId=1 orderNo=ORD202607011032570036 userId=2 segmentId=612 points=900
+2026-07-01 10:33:02.946  INFO 24564 --- [http-nio-8080-exec-20] c.e.airticket.service.TicketService      : ticket.create ticketId=2 orderNo=ORD202607011033020037 userId=2 segmentId=612 cabinClass=ECONOMY specialOffer=true priceAmount=5000.00 paymentAmount=5000.00
+2026-07-01 10:33:04.225  INFO 24564 --- [http-nio-8080-exec-32] c.e.airticket.service.TicketService      : ticket.pay ticketId=2 orderNo=ORD202607011033020037 userId=2 points=1000 memberLevel=VIP
+2026-07-01 10:33:17.822  INFO 24564 --- [http-nio-8080-exec-45] c.e.airticket.service.TicketService      : ticket.create ticketId=3 orderNo=ORD202607011033170038 userId=2 segmentId=223 cabinClass=ECONOMY specialOffer=true priceAmount=510.00 paymentAmount=459.00
+2026-07-01 10:33:21.911  INFO 24564 --- [http-nio-8080-exec-41] c.e.airticket.service.TicketService      : ticket.pay ticketId=3 orderNo=ORD202607011033170038 userId=2 points=1100 memberLevel=VIP
+2026-07-01 10:33:28.240  INFO 24564 --- [http-nio-8080-exec-49] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:33:38.171  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:34:16.655  INFO 24564 --- [http-nio-8080-exec-43] c.e.airticket.service.AdminService       : admin.saveSegment segmentId=7 flightId=7 specialOffer=true
+2026-07-01 10:34:23.198  INFO 24564 --- [http-nio-8080-exec-43] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:34:38.193  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:34:44.311  INFO 24564 --- [http-nio-8080-exec-43] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:35:00.431  INFO 24564 --- [http-nio-8080-exec-41] c.e.airticket.service.AdminService       : admin.saveSegment segmentId=7 flightId=7 specialOffer=true
+2026-07-01 10:35:06.975  INFO 24564 --- [http-nio-8080-exec-41] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:35:18.950  INFO 24564 --- [http-nio-8080-exec-41] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:35:38.204  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:36:25.997  INFO 24564 --- [http-nio-8080-exec-37] c.e.airticket.service.AdminService       : admin.saveFlight flightId=10613 flightNumber=AAA status=NORMAL
+2026-07-01 10:36:38.221  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:36:41.840  INFO 24564 --- [http-nio-8080-exec-20] c.e.airticket.service.AdminService       : admin.saveSegment segmentId=612 flightId=10613 specialOffer=true
+2026-07-01 10:36:47.978  INFO 24564 --- [http-nio-8080-exec-20] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:36:57.401  INFO 24564 --- [http-nio-8080-exec-25] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:37:12.849  INFO 24564 --- [http-nio-8080-exec-49] c.e.airticket.service.AdminService       : admin.saveSegment segmentId=7 flightId=7 specialOffer=true
+2026-07-01 10:37:18.373  INFO 24564 --- [http-nio-8080-exec-49] c.example.airticket.service.AuthService  : auth.loginSuccess userId=3 loginAccount=passengerB userType=PASSENGER
+2026-07-01 10:37:38.241  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:37:45.752  INFO 24564 --- [http-nio-8080-exec-25] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:38:05.987  INFO 24564 --- [http-nio-8080-exec-49] c.e.airticket.service.AdminService       : admin.disableFlight flightId=7
+2026-07-01 10:38:12.700  INFO 24564 --- [http-nio-8080-exec-20] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:38:26.861  INFO 24564 --- [http-nio-8080-exec-45] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:38:38.255  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:39:38.277  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:40:38.294  INFO 24564 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:41:51.798  INFO 25000 --- [main] c.e.airticket.AirticketApplication       : Starting AirticketApplication using Java 17.0.19 on guinea-cat with PID 25000 (D:\复旦大学\DS大二下\数据库及实现\Database-PJ\backend\target\classes started by 19588 in D:\复旦大学\DS大二下\数据库及实现\Database-PJ\backend)
+2026-07-01 10:41:51.808  INFO 25000 --- [main] c.e.airticket.AirticketApplication       : No active profile set, falling back to 1 default profile: "default"
+2026-07-01 10:41:52.746  INFO 25000 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-01 10:41:52.919  INFO 25000 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 150 ms. Found 9 JPA repository interfaces.
+2026-07-01 10:41:53.721  INFO 25000 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2026-07-01 10:41:53.763  INFO 25000 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-01 10:41:53.766  INFO 25000 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.83]
+2026-07-01 10:41:53.986  INFO 25000 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-07-01 10:41:53.987  INFO 25000 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2135 ms
+2026-07-01 10:41:54.232  INFO 25000 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-01 10:41:54.347  INFO 25000 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.6.15.Final
+2026-07-01 10:41:54.584  INFO 25000 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2026-07-01 10:41:54.766  INFO 25000 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-07-01 10:41:55.178  INFO 25000 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-07-01 10:41:55.206  INFO 25000 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL8Dialect
+2026-07-01 10:41:56.100  INFO 25000 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2026-07-01 10:41:56.121  INFO 25000 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-01 10:41:58.102  INFO 25000 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2026-07-01 10:41:58.124  INFO 25000 --- [main] c.e.airticket.AirticketApplication       : Started AirticketApplication in 6.795 seconds (JVM running for 7.371)
+2026-07-01 10:41:58.359  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:42:31.780  INFO 25000 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-01 10:42:31.781  INFO 25000 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-07-01 10:42:31.782  INFO 25000 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-07-01 10:42:32.318  INFO 25000 --- [http-nio-8080-exec-2] c.example.airticket.service.AuthService  : auth.register userId=4 loginAccount=1 userType=PASSENGER idDigestPrefix=9bd380fc
+2026-07-01 10:42:58.390  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:43:12.246  INFO 25000 --- [http-nio-8080-exec-9] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:43:21.342  INFO 25000 --- [http-nio-8080-exec-6] c.e.airticket.service.TicketService      : ticket.create ticketId=1 orderNo=ORD202607011043210001 userId=2 segmentId=32 cabinClass=ECONOMY specialOffer=true priceAmount=400.00 paymentAmount=400.00
+2026-07-01 10:43:23.966  INFO 25000 --- [http-nio-8080-exec-10] c.e.airticket.service.TicketService      : ticket.pay ticketId=1 orderNo=ORD202607011043210001 userId=2 points=1000 memberLevel=VIP
+2026-07-01 10:43:36.811  INFO 25000 --- [http-nio-8080-exec-5] c.e.airticket.service.TicketService      : ticket.changeApply oldTicketId=1 newTicketId=2 targetSegmentId=56 difference=41.00 status=PENDING_PAYMENT
+2026-07-01 10:43:39.161  INFO 25000 --- [http-nio-8080-exec-8] c.e.airticket.service.TicketService      : ticket.changePay oldTicketId=1 newTicketId=2 orderNo=ORD202607011043360002
+2026-07-01 10:43:58.414  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:43:59.110  INFO 25000 --- [http-nio-8080-exec-2] c.e.airticket.service.TicketService      : ticket.create ticketId=3 orderNo=ORD202607011043590003 userId=2 segmentId=258 cabinClass=ECONOMY specialOffer=false priceAmount=1260.00 paymentAmount=1134.00
+2026-07-01 10:44:00.743  INFO 25000 --- [http-nio-8080-exec-5] c.e.airticket.service.TicketService      : ticket.pay ticketId=3 orderNo=ORD202607011043590003 userId=2 points=1100 memberLevel=VIP
+2026-07-01 10:44:07.409  INFO 25000 --- [http-nio-8080-exec-8] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:44:28.277  INFO 25000 --- [http-nio-8080-exec-6] c.e.airticket.service.AdminService       : admin.saveFlight flightId=10613 flightNumber=AAA status=NORMAL
+2026-07-01 10:44:46.955  INFO 25000 --- [http-nio-8080-exec-9] c.e.airticket.service.AdminService       : admin.saveSegment segmentId=612 flightId=10613 specialOffer=true
+2026-07-01 10:44:52.255  INFO 25000 --- [http-nio-8080-exec-9] c.example.airticket.service.AuthService  : auth.loginSuccess userId=3 loginAccount=passengerB userType=PASSENGER
+2026-07-01 10:44:58.445  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:45:03.841  INFO 25000 --- [http-nio-8080-exec-7] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:45:07.991  INFO 25000 --- [http-nio-8080-exec-2] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:45:20.788  INFO 25000 --- [http-nio-8080-exec-1] c.e.airticket.service.AdminService       : admin.disableFlight flightId=7
+2026-07-01 10:45:26.570  INFO 25000 --- [http-nio-8080-exec-1] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:45:35.617  INFO 25000 --- [http-nio-8080-exec-3] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:45:40.278  INFO 25000 --- [http-nio-8080-exec-7] c.e.airticket.service.AdminService       : admin.enableFlight flightId=7
+2026-07-01 10:45:45.494  INFO 25000 --- [http-nio-8080-exec-7] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:45:55.924  INFO 25000 --- [http-nio-8080-exec-5] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:45:58.464  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:46:08.267  INFO 25000 --- [http-nio-8080-exec-2] c.e.airticket.service.AdminService       : admin.saveSegment segmentId=7 flightId=7 specialOffer=true
+2026-07-01 10:46:14.345  INFO 25000 --- [http-nio-8080-exec-5] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:46:26.895  INFO 25000 --- [http-nio-8080-exec-7] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:46:58.520  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:48:00.419  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:50:13.761  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:50:39.168  WARN 25000 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m43s284ms445?s400ns).
+2026-07-01 10:50:55.401  INFO 25000 --- [http-nio-8080-exec-5] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:51:13.775  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:51:14.287  INFO 25000 --- [http-nio-8080-exec-7] c.e.airticket.service.AdminService       : admin.saveFlight flightId=10613 flightNumber=AAA status=NORMAL
+2026-07-01 10:51:35.465  INFO 25000 --- [http-nio-8080-exec-7] c.e.airticket.service.AdminService       : admin.saveSegment segmentId=612 flightId=10613 specialOffer=true
+2026-07-01 10:51:41.821  INFO 25000 --- [http-nio-8080-exec-10] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:51:58.855  INFO 25000 --- [http-nio-8080-exec-5] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:52:01.980  INFO 25000 --- [http-nio-8080-exec-1] c.e.airticket.service.AdminService       : admin.disableFlight flightId=7
+2026-07-01 10:52:07.509  INFO 25000 --- [http-nio-8080-exec-1] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:52:13.795  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:52:16.210  INFO 25000 --- [http-nio-8080-exec-6] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:52:22.454  INFO 25000 --- [http-nio-8080-exec-2] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:52:24.740  INFO 25000 --- [http-nio-8080-exec-1] c.e.airticket.service.AdminService       : admin.enableFlight flightId=7
+2026-07-01 10:52:39.779  INFO 25000 --- [http-nio-8080-exec-3] c.e.airticket.service.AdminService       : admin.saveSegment segmentId=7 flightId=7 specialOffer=true
+2026-07-01 10:52:46.611  INFO 25000 --- [http-nio-8080-exec-3] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:52:58.315  INFO 25000 --- [http-nio-8080-exec-6] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:53:13.863  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:53:24.569  INFO 25000 --- [http-nio-8080-exec-6] c.example.airticket.service.AuthService  : auth.register userId=4 loginAccount=1 userType=PASSENGER idDigestPrefix=9bd380fc
+2026-07-01 10:54:13.959  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:54:42.976  INFO 25000 --- [http-nio-8080-exec-4] c.example.airticket.service.AuthService  : auth.register userId=5 loginAccount=lockdemo001 userType=PASSENGER idDigestPrefix=055a412e
+2026-07-01 10:54:43.195  INFO 25000 --- [http-nio-8080-exec-3] c.example.airticket.service.AuthService  : auth.register userId=6 loginAccount=lockdemo002 userType=PASSENGER idDigestPrefix=ea3b9aa4
+2026-07-01 10:54:43.556  INFO 25000 --- [http-nio-8080-exec-10] c.example.airticket.service.AuthService  : auth.register userId=7 loginAccount=lockdemo003 userType=PASSENGER idDigestPrefix=e5e89f44
+2026-07-01 10:54:43.829  INFO 25000 --- [http-nio-8080-exec-8] c.example.airticket.service.AuthService  : auth.register userId=8 loginAccount=lockdemo004 userType=PASSENGER idDigestPrefix=edab108d
+2026-07-01 10:54:44.040  INFO 25000 --- [http-nio-8080-exec-7] c.example.airticket.service.AuthService  : auth.register userId=9 loginAccount=lockdemo005 userType=PASSENGER idDigestPrefix=d62ebdea
+2026-07-01 10:54:44.295  INFO 25000 --- [http-nio-8080-exec-1] c.example.airticket.service.AuthService  : auth.register userId=10 loginAccount=lockdemo006 userType=PASSENGER idDigestPrefix=a40d61b2
+2026-07-01 10:54:44.765  INFO 25000 --- [http-nio-8080-exec-6] c.example.airticket.service.AuthService  : auth.register userId=11 loginAccount=lockdemo007 userType=PASSENGER idDigestPrefix=1e1e3049
+2026-07-01 10:54:45.062  INFO 25000 --- [http-nio-8080-exec-9] c.example.airticket.service.AuthService  : auth.register userId=12 loginAccount=lockdemo008 userType=PASSENGER idDigestPrefix=a6fe2857
+2026-07-01 10:54:45.555  INFO 25000 --- [http-nio-8080-exec-2] c.example.airticket.service.AuthService  : auth.register userId=13 loginAccount=lockdemo009 userType=PASSENGER idDigestPrefix=80c59ba1
+2026-07-01 10:54:45.917  INFO 25000 --- [http-nio-8080-exec-5] c.example.airticket.service.AuthService  : auth.register userId=14 loginAccount=lockdemo010 userType=PASSENGER idDigestPrefix=db3866fa
+2026-07-01 10:54:46.161  INFO 25000 --- [http-nio-8080-exec-4] c.example.airticket.service.AuthService  : auth.register userId=15 loginAccount=lockdemo011 userType=PASSENGER idDigestPrefix=195fc619
+2026-07-01 10:54:46.489  INFO 25000 --- [http-nio-8080-exec-3] c.example.airticket.service.AuthService  : auth.register userId=16 loginAccount=lockdemo012 userType=PASSENGER idDigestPrefix=3c7a5a97
+2026-07-01 10:54:47.138  INFO 25000 --- [http-nio-8080-exec-10] c.example.airticket.service.AuthService  : auth.register userId=17 loginAccount=lockdemo013 userType=PASSENGER idDigestPrefix=cd6e7202
+2026-07-01 10:54:47.618  INFO 25000 --- [http-nio-8080-exec-8] c.example.airticket.service.AuthService  : auth.register userId=18 loginAccount=lockdemo014 userType=PASSENGER idDigestPrefix=9f4d4be7
+2026-07-01 10:54:48.115  INFO 25000 --- [http-nio-8080-exec-7] c.example.airticket.service.AuthService  : auth.register userId=19 loginAccount=lockdemo015 userType=PASSENGER idDigestPrefix=17386b98
+2026-07-01 10:54:48.507  INFO 25000 --- [http-nio-8080-exec-1] c.example.airticket.service.AuthService  : auth.register userId=20 loginAccount=lockdemo016 userType=PASSENGER idDigestPrefix=5a76933e
+2026-07-01 10:54:48.785  INFO 25000 --- [http-nio-8080-exec-6] c.example.airticket.service.AuthService  : auth.register userId=21 loginAccount=lockdemo017 userType=PASSENGER idDigestPrefix=baeaeaab
+2026-07-01 10:54:49.135  INFO 25000 --- [http-nio-8080-exec-9] c.example.airticket.service.AuthService  : auth.register userId=22 loginAccount=lockdemo018 userType=PASSENGER idDigestPrefix=54677b13
+2026-07-01 10:54:49.753  INFO 25000 --- [http-nio-8080-exec-2] c.example.airticket.service.AuthService  : auth.register userId=23 loginAccount=lockdemo019 userType=PASSENGER idDigestPrefix=4fa7d249
+2026-07-01 10:54:50.152  INFO 25000 --- [http-nio-8080-exec-5] c.example.airticket.service.AuthService  : auth.register userId=24 loginAccount=lockdemo020 userType=PASSENGER idDigestPrefix=d6d431bf
+2026-07-01 10:54:50.511  INFO 25000 --- [http-nio-8080-exec-4] c.example.airticket.service.AuthService  : auth.register userId=25 loginAccount=lockdemo021 userType=PASSENGER idDigestPrefix=855c5937
+2026-07-01 10:54:51.109  INFO 25000 --- [http-nio-8080-exec-3] c.example.airticket.service.AuthService  : auth.register userId=26 loginAccount=lockdemo022 userType=PASSENGER idDigestPrefix=5b94215a
+2026-07-01 10:54:51.539  INFO 25000 --- [http-nio-8080-exec-10] c.example.airticket.service.AuthService  : auth.register userId=27 loginAccount=lockdemo023 userType=PASSENGER idDigestPrefix=e7a78496
+2026-07-01 10:54:51.966  INFO 25000 --- [http-nio-8080-exec-8] c.example.airticket.service.AuthService  : auth.register userId=28 loginAccount=lockdemo024 userType=PASSENGER idDigestPrefix=3c9df2a4
+2026-07-01 10:54:52.381  INFO 25000 --- [http-nio-8080-exec-7] c.example.airticket.service.AuthService  : auth.register userId=29 loginAccount=lockdemo025 userType=PASSENGER idDigestPrefix=ade63588
+2026-07-01 10:54:52.722  INFO 25000 --- [http-nio-8080-exec-1] c.example.airticket.service.AuthService  : auth.register userId=30 loginAccount=lockdemo026 userType=PASSENGER idDigestPrefix=92f4a14d
+2026-07-01 10:54:52.995  INFO 25000 --- [http-nio-8080-exec-6] c.example.airticket.service.AuthService  : auth.register userId=31 loginAccount=lockdemo027 userType=PASSENGER idDigestPrefix=e262cacf
+2026-07-01 10:54:53.265  INFO 25000 --- [http-nio-8080-exec-9] c.example.airticket.service.AuthService  : auth.register userId=32 loginAccount=lockdemo028 userType=PASSENGER idDigestPrefix=75514ea1
+2026-07-01 10:54:53.535  INFO 25000 --- [http-nio-8080-exec-2] c.example.airticket.service.AuthService  : auth.register userId=33 loginAccount=lockdemo029 userType=PASSENGER idDigestPrefix=7ffeb299
+2026-07-01 10:54:54.860  INFO 25000 --- [http-nio-8080-exec-5] c.example.airticket.service.AuthService  : auth.register userId=34 loginAccount=lockdemo030 userType=PASSENGER idDigestPrefix=c25b615c
+2026-07-01 10:54:55.455  INFO 25000 --- [http-nio-8080-exec-4] c.example.airticket.service.AuthService  : auth.register userId=35 loginAccount=lockdemo031 userType=PASSENGER idDigestPrefix=95676c5b
+2026-07-01 10:54:55.789  INFO 25000 --- [http-nio-8080-exec-3] c.example.airticket.service.AuthService  : auth.register userId=36 loginAccount=lockdemo032 userType=PASSENGER idDigestPrefix=ce7c7dc0
+2026-07-01 10:54:55.935  INFO 25000 --- [http-nio-8080-exec-10] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:54:56.139  INFO 25000 --- [http-nio-8080-exec-8] c.example.airticket.service.AuthService  : auth.register userId=37 loginAccount=lockdemo033 userType=PASSENGER idDigestPrefix=adcefc60
+2026-07-01 10:54:56.415  INFO 25000 --- [http-nio-8080-exec-1] c.example.airticket.service.AuthService  : auth.register userId=38 loginAccount=lockdemo034 userType=PASSENGER idDigestPrefix=af135fa9
+2026-07-01 10:54:56.782  INFO 25000 --- [http-nio-8080-exec-5] c.example.airticket.service.AuthService  : auth.register userId=39 loginAccount=lockdemo035 userType=PASSENGER idDigestPrefix=625daaa0
+2026-07-01 10:54:56.999  INFO 25000 --- [http-nio-8080-exec-2] c.example.airticket.service.AuthService  : auth.register userId=40 loginAccount=lockdemo036 userType=PASSENGER idDigestPrefix=4b1ced4d
+2026-07-01 10:54:57.454  INFO 25000 --- [http-nio-8080-exec-3] c.example.airticket.service.AuthService  : auth.register userId=41 loginAccount=lockdemo037 userType=PASSENGER idDigestPrefix=3e88bc83
+2026-07-01 10:54:57.810  INFO 25000 --- [http-nio-8080-exec-6] c.example.airticket.service.AuthService  : auth.register userId=42 loginAccount=lockdemo038 userType=PASSENGER idDigestPrefix=9e8c3c8b
+2026-07-01 10:54:58.157  INFO 25000 --- [http-nio-8080-exec-9] c.example.airticket.service.AuthService  : auth.register userId=43 loginAccount=lockdemo039 userType=PASSENGER idDigestPrefix=d35b2523
+2026-07-01 10:54:58.423  INFO 25000 --- [http-nio-8080-exec-8] c.example.airticket.service.AuthService  : auth.register userId=44 loginAccount=lockdemo040 userType=PASSENGER idDigestPrefix=e21bf463
+2026-07-01 10:54:58.752  INFO 25000 --- [http-nio-8080-exec-10] c.example.airticket.service.AuthService  : auth.register userId=45 loginAccount=lockdemo041 userType=PASSENGER idDigestPrefix=0a115185
+2026-07-01 10:54:59.496  INFO 25000 --- [http-nio-8080-exec-1] c.example.airticket.service.AuthService  : auth.register userId=46 loginAccount=lockdemo042 userType=PASSENGER idDigestPrefix=098df75f
+2026-07-01 10:55:00.028  INFO 25000 --- [http-nio-8080-exec-9] c.example.airticket.service.AuthService  : auth.register userId=47 loginAccount=lockdemo043 userType=PASSENGER idDigestPrefix=e35dc7d3
+2026-07-01 10:55:01.318  INFO 25000 --- [http-nio-8080-exec-4] c.example.airticket.service.AuthService  : auth.register userId=48 loginAccount=lockdemo044 userType=PASSENGER idDigestPrefix=5a337e9c
+2026-07-01 10:55:01.659  INFO 25000 --- [http-nio-8080-exec-7] c.example.airticket.service.AuthService  : auth.register userId=49 loginAccount=lockdemo045 userType=PASSENGER idDigestPrefix=4b5b4333
+2026-07-01 10:55:01.977  INFO 25000 --- [http-nio-8080-exec-6] c.example.airticket.service.AuthService  : auth.register userId=50 loginAccount=lockdemo046 userType=PASSENGER idDigestPrefix=bc047d60
+2026-07-01 10:55:02.372  INFO 25000 --- [http-nio-8080-exec-8] c.example.airticket.service.AuthService  : auth.register userId=51 loginAccount=lockdemo047 userType=PASSENGER idDigestPrefix=b1694133
+2026-07-01 10:55:02.639  INFO 25000 --- [http-nio-8080-exec-2] c.example.airticket.service.AuthService  : auth.register userId=52 loginAccount=lockdemo048 userType=PASSENGER idDigestPrefix=4bc8e508
+2026-07-01 10:55:02.938  INFO 25000 --- [http-nio-8080-exec-10] c.example.airticket.service.AuthService  : auth.register userId=53 loginAccount=lockdemo049 userType=PASSENGER idDigestPrefix=1dafba6d
+2026-07-01 10:55:03.303  INFO 25000 --- [http-nio-8080-exec-5] c.example.airticket.service.AuthService  : auth.register userId=54 loginAccount=lockdemo050 userType=PASSENGER idDigestPrefix=cb3ca52e
+2026-07-01 10:55:03.502  INFO 25000 --- [http-nio-8080-exec-1] c.e.airticket.service.TicketService      : ticket.create ticketId=1 orderNo=ORD202607011055030004 userId=32 segmentId=32 cabinClass=FIRST_CLASS specialOffer=true priceAmount=750.00 paymentAmount=750.00
+2026-07-01 10:55:03.678  INFO 25000 --- [http-nio-8080-exec-6] c.e.airticket.service.TicketService      : ticket.create ticketId=2 orderNo=ORD202607011055030005 userId=11 segmentId=32 cabinClass=FIRST_CLASS specialOffer=true priceAmount=750.00 paymentAmount=750.00
+2026-07-01 10:55:03.694  INFO 25000 --- [http-nio-8080-exec-7] c.e.airticket.service.TicketService      : ticket.create ticketId=3 orderNo=ORD202607011055030006 userId=33 segmentId=32 cabinClass=FIRST_CLASS specialOffer=true priceAmount=750.00 paymentAmount=750.00
+2026-07-01 10:55:03.707  INFO 25000 --- [http-nio-8080-exec-8] c.e.airticket.service.TicketService      : ticket.create ticketId=4 orderNo=ORD202607011055030007 userId=40 segmentId=32 cabinClass=FIRST_CLASS specialOffer=true priceAmount=750.00 paymentAmount=750.00
+2026-07-01 10:55:03.753  INFO 25000 --- [http-nio-8080-exec-9] c.e.airticket.service.TicketService      : ticket.create ticketId=5 orderNo=ORD202607011055030008 userId=13 segmentId=32 cabinClass=FIRST_CLASS specialOffer=true priceAmount=750.00 paymentAmount=750.00
+2026-07-01 10:55:04.048  INFO 25000 --- [http-nio-8080-exec-7] c.e.airticket.service.TicketService      : ticket.pay ticketId=1 orderNo=ORD202607011055030004 userId=32 points=100 memberLevel=NORMAL
+2026-07-01 10:55:04.082  INFO 25000 --- [http-nio-8080-exec-8] c.e.airticket.service.TicketService      : ticket.pay ticketId=2 orderNo=ORD202607011055030005 userId=11 points=100 memberLevel=NORMAL
+2026-07-01 10:55:04.138  INFO 25000 --- [http-nio-8080-exec-9] c.e.airticket.service.TicketService      : ticket.pay ticketId=3 orderNo=ORD202607011055030006 userId=33 points=100 memberLevel=NORMAL
+2026-07-01 10:55:04.185  INFO 25000 --- [http-nio-8080-exec-14] c.e.airticket.service.TicketService      : ticket.pay ticketId=4 orderNo=ORD202607011055030007 userId=40 points=100 memberLevel=NORMAL
+2026-07-01 10:55:04.229  INFO 25000 --- [http-nio-8080-exec-2] c.e.airticket.service.TicketService      : ticket.pay ticketId=5 orderNo=ORD202607011055030008 userId=13 points=100 memberLevel=NORMAL
+2026-07-01 10:55:13.982  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:55:19.298  INFO 25000 --- [http-nio-8080-exec-20] c.e.airticket.service.TicketService      : ticket.refund ticketId=1 orderNo=ORD202607011055030004 userId=32 segmentId=32 points=0
+2026-07-01 10:55:19.506  INFO 25000 --- [http-nio-8080-exec-11] c.e.airticket.service.TicketService      : ticket.refund ticketId=2 orderNo=ORD202607011055030005 userId=11 segmentId=32 points=0
+2026-07-01 10:55:19.684  INFO 25000 --- [http-nio-8080-exec-13] c.e.airticket.service.TicketService      : ticket.refund ticketId=3 orderNo=ORD202607011055030006 userId=33 segmentId=32 points=0
+2026-07-01 10:55:19.741  INFO 25000 --- [http-nio-8080-exec-19] c.e.airticket.service.TicketService      : ticket.refund ticketId=4 orderNo=ORD202607011055030007 userId=40 segmentId=32 points=0
+2026-07-01 10:55:19.798  INFO 25000 --- [http-nio-8080-exec-18] c.e.airticket.service.TicketService      : ticket.refund ticketId=5 orderNo=ORD202607011055030008 userId=13 segmentId=32 points=0
+2026-07-01 10:56:14.042  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:56:31.986  INFO 25000 --- [http-nio-8080-exec-29] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 10:57:14.064  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:57:48.859  INFO 25000 --- [http-nio-8080-exec-12] c.example.airticket.service.AuthService  : auth.register userId=4 loginAccount=1 userType=PASSENGER idDigestPrefix=9bd380fc
+2026-07-01 10:58:14.083  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:58:29.636  INFO 25000 --- [http-nio-8080-exec-5] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 10:58:54.227  INFO 25000 --- [http-nio-8080-exec-22] c.e.airticket.service.TicketService      : ticket.create ticketId=1 orderNo=ORD202607011058540009 userId=2 segmentId=32 cabinClass=ECONOMY specialOffer=true priceAmount=400.00 paymentAmount=400.00
+2026-07-01 10:58:57.007  INFO 25000 --- [http-nio-8080-exec-3] c.e.airticket.service.TicketService      : ticket.pay ticketId=1 orderNo=ORD202607011058540009 userId=2 points=1000 memberLevel=VIP
+2026-07-01 10:59:14.102  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 10:59:19.858  INFO 25000 --- [http-nio-8080-exec-17] c.e.airticket.service.TicketService      : ticket.changeApply oldTicketId=1 newTicketId=2 targetSegmentId=56 difference=41.00 status=PENDING_PAYMENT
+2026-07-01 10:59:22.433  INFO 25000 --- [http-nio-8080-exec-22] c.e.airticket.service.TicketService      : ticket.changePay oldTicketId=1 newTicketId=2 orderNo=ORD202607011059190010
+2026-07-01 10:59:41.631  INFO 25000 --- [http-nio-8080-exec-15] c.e.airticket.service.TicketService      : ticket.refund ticketId=2 orderNo=ORD202607011059190010 userId=2 segmentId=56 points=900
+2026-07-01 10:59:52.167  INFO 25000 --- [http-nio-8080-exec-12] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 11:00:14.249  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 11:00:22.348  INFO 25000 --- [http-nio-8080-exec-3] c.e.airticket.service.AdminService       : admin.saveFlight flightId=10613 flightNumber=AAA status=NORMAL
+2026-07-01 11:00:42.221  INFO 25000 --- [http-nio-8080-exec-3] c.e.airticket.service.AdminService       : admin.saveSegment segmentId=612 flightId=10613 specialOffer=true
+2026-07-01 11:00:47.971  INFO 25000 --- [http-nio-8080-exec-3] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 11:01:03.548  INFO 25000 --- [http-nio-8080-exec-22] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 11:01:06.403  INFO 25000 --- [http-nio-8080-exec-22] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 11:01:14.112  INFO 25000 --- [http-nio-8080-exec-15] c.e.airticket.service.AdminService       : admin.disableFlight flightId=7
+2026-07-01 11:01:14.285  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 11:01:19.651  INFO 25000 --- [http-nio-8080-exec-15] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 11:01:32.473  INFO 25000 --- [http-nio-8080-exec-1] c.example.airticket.service.AuthService  : auth.loginSuccess userId=1 loginAccount=admin userType=ADMIN
+2026-07-01 11:01:35.836  INFO 25000 --- [http-nio-8080-exec-3] c.e.airticket.service.AdminService       : admin.enableFlight flightId=7
+2026-07-01 11:01:52.178  INFO 25000 --- [http-nio-8080-exec-3] c.e.airticket.service.AdminService       : admin.saveSegment segmentId=7 flightId=7 specialOffer=false
+2026-07-01 11:01:58.149  INFO 25000 --- [http-nio-8080-exec-3] c.example.airticket.service.AuthService  : auth.loginSuccess userId=2 loginAccount=passengerA userType=PASSENGER
+2026-07-01 11:02:14.300  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 11:02:18.283  INFO 25000 --- [http-nio-8080-exec-4] c.example.airticket.service.AuthService  : auth.loginSuccess userId=3 loginAccount=passengerB userType=PASSENGER
+2026-07-01 11:03:14.324  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 11:04:14.340  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 11:05:14.358  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 11:06:14.453  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 11:07:14.468  INFO 25000 --- [scheduling-1] c.e.a.service.ExpiredOrderService        : job.expirePendingOrders count=0
+2026-07-01 11:07:16.702  INFO 25000 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-01 11:07:16.711  INFO 25000 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-07-01 11:07:16.732  INFO 25000 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

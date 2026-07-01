@@ -11,6 +11,8 @@ public class TicketResponse {
     public String orderNo;
     public String ticketStatus;
     public Integer userId;
+    public String loginAccount;
+    public String userName;
     public Integer flightId;
     public Integer segmentId;
     public String flightNumber;
@@ -41,6 +43,8 @@ public class TicketResponse {
         response.orderNo = ticket.orderNo;
         response.ticketStatus = ticket.ticketStatus.name();
         response.userId = ticket.user == null ? null : ticket.user.userId;
+        response.loginAccount = ticket.user == null ? null : ticket.user.loginAccount;
+        response.userName = ticket.user == null ? null : ticket.user.userName;
         response.flightId = ticket.flight == null ? null : ticket.flight.flightId;
         response.segmentId = ticket.segment == null ? null : ticket.segment.segmentId;
         response.flightNumber = ticket.flight == null ? null : ticket.flight.flightNumber;

@@ -72,8 +72,10 @@ import {
   maskUserName,
   orderRouteSummary,
   prependTicketIfMissing,
+  replaceTicket,
   roleHome,
   shortTime,
+  sortTicketsNewestFirst,
   statusText,
   validateRegisterForm,
 } from './lib/display';
@@ -595,11 +597,20 @@ function PassengerWorkspace({
     }
   };
 
-  const doRefund = async (ticketId: number) => {
+  const doRefund = async (ticketToRefund: Ticket) => {
     setLoading(true);
     try {
-      await refundTicket(ticketId, '前端演示退票');
-      await Promise.all([refreshProfile(), refreshTickets()]);
+      const refundedTicket = await refundTicket(ticketToRefund.ticketId, '前端演示退票');
+      setSelectedTicket(refundedTicket);
+      setTickets((current) => replaceTicket(current, refundedTicket));
+      setFlights((current) => deductSeatFromFlights(current, ticketToRefund.segmentId, ticketToRefund.cabinClass, -1));
+      setSelectedFlight((current) => {
+        if (!current || current.segmentId !== ticketToRefund.segmentId) {
+          return current;
+        }
+        return deductSeatFromFlights([current], ticketToRefund.segmentId, ticketToRefund.cabinClass, -1)[0];
+      });
+      await refreshProfile();
       notify('退票成功，库存与积分已回补', 'success');
     } catch (error) {
       notify(error instanceof Error ? error.message : '退票失败', 'error');
@@ -859,7 +870,7 @@ function PassengerWorkspace({
                   )}
                   {ticket.ticketStatus === 'PAID' && (
                     <>
-                      <button className="mini-button" onClick={() => doRefund(ticket.ticketId)}>退票</button>
+                      <button className="mini-button" onClick={() => doRefund(ticket)}>退票</button>
                       <button className="mini-button" onClick={() => loadChangeTargets(ticket)}>改签</button>
                     </>
                   )}
@@ -1054,6 +1065,14 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
     }
   };
 
+  const refreshTicketsOnly = async () => {
+    try {
+      setTickets(await listTickets());
+    } catch (error) {
+      notify(error instanceof Error ? error.message : '订单加载失败', 'error');
+    }
+  };
+
   const handleResetDemoData = async () => {
     const ok = window.confirm('确认恢复默认演示数据吗？这会重置订单、航班、会员积分等演示状态。');
     if (!ok) {
@@ -1076,6 +1095,17 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
   useEffect(() => {
     void refreshAll();
   }, []);
+
+  useEffect(() => {
+    if (tab !== 'tickets') {
+      return;
+    }
+    void refreshTicketsOnly();
+    const timer = window.setInterval(() => {
+      void refreshTicketsOnly();
+    }, 2000);
+    return () => window.clearInterval(timer);
+  }, [tab]);
 
   const submitFlight = async (event: FormEvent) => {
     event.preventDefault();
@@ -1463,11 +1493,16 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
           />
           <DataTable
             title="订单列表"
-            rows={tickets.slice(0, 14).map((ticket) => ({
-              key: String(ticket.ticketId),
-              main: `#${ticket.ticketId} ${ticket.orderNo}`,
-              meta: `${statusText(ticket.ticketStatus)} · ${formatMoney(ticket.paymentAmount)} · 原票 ${ticket.originalTicketId ?? '-'}`,
-            }))}
+            rows={sortTicketsNewestFirst(tickets).slice(0, 14).map((ticket) => {
+              const account = ticket.loginAccount ?? `用户#${ticket.userId}`;
+              const userName = ticket.userName ? maskUserName(ticket.userName) : '-';
+              const route = `${ticket.originAirportCode ?? '-'} → ${ticket.destinationAirportCode ?? '-'}`;
+              return ({
+                key: String(ticket.ticketId),
+                main: `#${ticket.ticketId} ${ticket.orderNo} · ${account} · ${userName}`,
+                meta: `${ticket.flightNumber ?? `航班#${ticket.flightId}`} · ${ticket.flightDate ?? '-'} · ${route} · ${cabinText(ticket.cabinClass)} · ${statusText(ticket.ticketStatus)} · ${formatMoney(ticket.paymentAmount)}`,
+              });
+            })}
           />
         </section>
       )}

@@ -169,7 +169,15 @@ export function prependTicketIfMissing(tickets: Ticket[], ticket: Ticket) {
   return [ticket, ...tickets];
 }
 
-export function deductSeatFromFlights(flights: FlightSearchItem[], segmentId: number, cabinClass: CabinClass) {
+export function replaceTicket(tickets: Ticket[], ticket: Ticket) {
+  return tickets.map((item) => (item.ticketId === ticket.ticketId ? ticket : item));
+}
+
+export function sortTicketsNewestFirst(tickets: Ticket[]) {
+  return [...tickets].sort((left, right) => right.ticketId - left.ticketId);
+}
+
+export function deductSeatFromFlights(flights: FlightSearchItem[], segmentId: number, cabinClass: CabinClass, amount = 1) {
   return flights.map((flight) => {
     if (flight.segmentId !== segmentId) {
       return flight;
@@ -177,12 +185,12 @@ export function deductSeatFromFlights(flights: FlightSearchItem[], segmentId: nu
     if (cabinClass === 'FIRST_CLASS') {
       return {
         ...flight,
-        firstClassRemainingSeats: Math.max(0, flight.firstClassRemainingSeats - 1),
+        firstClassRemainingSeats: Math.max(0, flight.firstClassRemainingSeats - amount),
       };
     }
     return {
       ...flight,
-      economyRemainingSeats: Math.max(0, flight.economyRemainingSeats - 1),
+      economyRemainingSeats: Math.max(0, flight.economyRemainingSeats - amount),
     };
   });
 }

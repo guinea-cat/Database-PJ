@@ -61,6 +61,8 @@ export type Ticket = {
   orderNo: string;
   ticketStatus: TicketStatus;
   userId: number;
+  loginAccount?: string;
+  userName?: string;
   flightId: number;
   segmentId: number;
   flightNumber?: string;

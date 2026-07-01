@@ -11,7 +11,9 @@ import {
   maskUserName,
   orderRouteSummary,
   prependTicketIfMissing,
+  replaceTicket,
   roleHome,
+  sortTicketsNewestFirst,
   statusText,
   validateRegisterForm,
 } from './display';
@@ -165,6 +167,31 @@ describe('display helpers', () => {
     const afterFirst = deductSeatFromFlights(flights, 100, 'FIRST_CLASS');
     expect(afterFirst[0].firstClassRemainingSeats).toBe(0);
     expect(afterFirst[0].economyRemainingSeats).toBe(3);
+  });
+
+  it('restores a refunded seat by applying a negative deduction', () => {
+    const flights = [
+      { flightId: 10, flightNumber: 'A', flightDate: '2026-07-01', flightStatus: 'NORMAL' as const, aircraftRegNo: 'B-1', departureAirportCode: 'PEK', arrivalAirportCode: 'SHA', segmentId: 100, originStopNo: 1, destinationStopNo: 2, originAirportCode: 'PEK', destinationAirportCode: 'SHA', plannedDepartureTime: '2026-07-01T08:00:00', plannedArrivalTime: '2026-07-01T10:00:00', firstClassRemainingSeats: 1, economyRemainingSeats: 2, firstClassPrice: 1800, economyPrice: 800, isSpecialOffer: false, isAvailable: true },
+    ];
+
+    const restored = deductSeatFromFlights(flights, 100, 'ECONOMY', -1);
+
+    expect(restored[0].economyRemainingSeats).toBe(3);
+  });
+
+  it('replaces an existing ticket with the latest backend version', () => {
+    const pending = { ticketId: 1, orderNo: 'ORD1', ticketStatus: 'PAID' as const, userId: 2, flightId: 10, segmentId: 100, cabinClass: 'ECONOMY' as const, passengerName: 'A', priceAmount: 800, paymentAmount: 800 };
+    const refunded = { ...pending, ticketStatus: 'REFUND_SUCCESS' as const, refundedAt: '2026-07-01T10:00:00' };
+
+    expect(replaceTicket([pending], refunded)[0].ticketStatus).toBe('REFUND_SUCCESS');
+  });
+
+  it('sorts tickets newest first by ticket id', () => {
+    const older = { ticketId: 1, orderNo: 'ORD1', ticketStatus: 'PAID' as const, userId: 2, flightId: 10, segmentId: 100, cabinClass: 'ECONOMY' as const, passengerName: 'A', priceAmount: 800, paymentAmount: 800 };
+    const newer = { ...older, ticketId: 3, orderNo: 'ORD3' };
+    const middle = { ...older, ticketId: 2, orderNo: 'ORD2' };
+
+    expect(sortTicketsNewestFirst([older, newer, middle]).map((ticket) => ticket.ticketId)).toEqual([3, 2, 1]);
   });
 
   it('formats change history as a readable order chain', () => {
