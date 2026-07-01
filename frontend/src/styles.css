@@ -911,6 +911,43 @@ select:focus {
   gap: 10px;
 }
 
+.table-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.pagination-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pagination-actions input {
+  width: 78px;
+  min-height: 32px;
+}
+
+.pagination-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+  transform: none;
+}
+
 .ticket-row,
 .data-row {
   padding: 12px;
@@ -1174,8 +1211,14 @@ select:focus {
   .seat-grid,
   .kpi-ribbon,
   .admin-kpis,
+  .table-filters,
   .resource-card .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .table-pagination {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .route-strip,

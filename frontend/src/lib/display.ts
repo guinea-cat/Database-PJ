@@ -1,4 +1,4 @@
-import type { Airport, CabinClass, FlightSearchItem, FlightStatus, RegisterForm, Ticket, TicketStatus, UserType } from '../types';
+import type { Airport, CabinClass, Flight, FlightSearchItem, FlightSegment, FlightStatus, RegisterForm, Ticket, TicketStatus, UserType } from '../types';
 
 type AirportLike = Airport | Pick<Airport, 'airportCode' | 'airportName' | 'city'>;
 type AirportLookup = Record<string, AirportLike>;
@@ -175,6 +175,74 @@ export function replaceTicket(tickets: Ticket[], ticket: Ticket) {
 
 export function sortTicketsNewestFirst(tickets: Ticket[]) {
   return [...tickets].sort((left, right) => right.ticketId - left.ticketId);
+}
+
+export type AdminFlightFilters = {
+  keyword: string;
+  flightDate: string;
+  flightStatus: FlightStatus | '';
+};
+
+export type AdminSegmentFilters = {
+  keyword: string;
+  flightId: string;
+  specialOffer: 'all' | 'special' | 'regular';
+};
+
+function includesKeyword(values: Array<number | string | undefined>, keyword: string) {
+  const normalized = keyword.trim().toLowerCase();
+  if (!normalized) {
+    return true;
+  }
+  return values.some((value) => String(value ?? '').toLowerCase().includes(normalized));
+}
+
+export function filterAdminFlights(flights: Flight[], filters: AdminFlightFilters) {
+  return flights.filter((flight) => {
+    const matchesKeyword = includesKeyword([
+      flight.flightId,
+      flight.flightNumber,
+      flight.departureAirportCode,
+      flight.arrivalAirportCode,
+    ], filters.keyword);
+    const matchesDate = !filters.flightDate || flight.flightDate === filters.flightDate;
+    const matchesStatus = !filters.flightStatus || flight.flightStatus === filters.flightStatus;
+    return matchesKeyword && matchesDate && matchesStatus;
+  });
+}
+
+export function filterAdminSegments(
+  segments: FlightSegment[],
+  flights: Flight[],
+  filters: AdminSegmentFilters,
+) {
+  const flightLookup = new Map(flights.map((flight) => [flight.flightId, flight]));
+  return segments.filter((segment) => {
+    const segmentFlightId = segment.flight?.flightId;
+    const flight = segment.flight ?? (segmentFlightId == null ? undefined : flightLookup.get(segmentFlightId));
+    const matchesKeyword = includesKeyword([
+      segment.segmentId,
+      segment.originAirportCode,
+      segment.destinationAirportCode,
+      segmentFlightId,
+      flight?.flightId,
+      flight?.flightNumber,
+    ], filters.keyword);
+    const matchesFlight = !filters.flightId || String(segmentFlightId ?? flight?.flightId ?? '') === filters.flightId;
+    const matchesSpecialOffer = filters.specialOffer === 'all'
+      || (filters.specialOffer === 'special' && Boolean(segment.isSpecialOffer))
+      || (filters.specialOffer === 'regular' && !segment.isSpecialOffer);
+    return matchesKeyword && matchesFlight && matchesSpecialOffer;
+  });
+}
+
+export function clampPage(value: number | string, totalPages: number) {
+  const maxPage = Math.max(1, Math.floor(totalPages));
+  const parsed = typeof value === 'number' ? value : Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed)) {
+    return 1;
+  }
+  return Math.min(maxPage, Math.max(1, Math.floor(parsed)));
 }
 
 export function deductSeatFromFlights(flights: FlightSearchItem[], segmentId: number, cabinClass: CabinClass, amount = 1) {

@@ -64,7 +64,10 @@ import {
   cabinText,
   changeChainText,
   changeTargetPrice,
+  clampPage,
   deductSeatFromFlights,
+  filterAdminFlights,
+  filterAdminSegments,
   filterChangeTargets,
   formatDateTime,
   formatForDateTimeLocal,
@@ -983,6 +986,9 @@ function FlightCard({
   );
 }
 
+const ADMIN_FLIGHT_PAGE_SIZE = 10;
+const ADMIN_SEGMENT_PAGE_SIZE = 12;
+
 function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['kind']) => void }) {
   const [tab, setTab] = useState<AdminTab>('overview');
   const [dashboard, setDashboard] = useState<DashboardSummary>({});
@@ -995,6 +1001,18 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
   const [users, setUsers] = useState<AuthUser[]>([]);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [editingSegmentId, setEditingSegmentId] = useState<number | null>(null);
+  const [flightFilters, setFlightFilters] = useState({
+    keyword: '',
+    flightDate: '',
+    flightStatus: '' as Flight['flightStatus'] | '',
+  });
+  const [segmentFilters, setSegmentFilters] = useState({
+    keyword: '',
+    flightId: '',
+    specialOffer: 'all' as 'all' | 'special' | 'regular',
+  });
+  const [flightPage, setFlightPage] = useState(1);
+  const [segmentPage, setSegmentPage] = useState(1);
   const [flightForm, setFlightForm] = useState({
     flightNumber: 'MU9001',
     flightDate: '2026-07-01',
@@ -1091,10 +1109,59 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
     value: airport.airportCode,
     label: airportLabel(airport),
   }));
+  const flightStatusOptions = [
+    { value: '', label: '全部状态' },
+    ...(['NORMAL', 'DELAYED', 'CANCELLED', 'COMPLETED', 'DISABLED'] as Flight['flightStatus'][]).map((status) => ({
+      value: status,
+      label: statusText(status),
+    })),
+  ];
+  const segmentFlightOptions = [
+    { value: '', label: '全部航班' },
+    ...flights.map((flight) => ({
+      value: String(flight.flightId),
+      label: `${flight.flightNumber} #${flight.flightId}`,
+    })),
+  ];
+  const specialOfferOptions = [
+    { value: 'all', label: '全部航段' },
+    { value: 'special', label: '仅特价' },
+    { value: 'regular', label: '非特价' },
+  ];
+  const filteredFlights = filterAdminFlights(flights, flightFilters);
+  const filteredSegments = filterAdminSegments(segments, flights, segmentFilters);
+  const flightTotalPages = Math.max(1, Math.ceil(filteredFlights.length / ADMIN_FLIGHT_PAGE_SIZE));
+  const segmentTotalPages = Math.max(1, Math.ceil(filteredSegments.length / ADMIN_SEGMENT_PAGE_SIZE));
+  const visibleFlights = filteredFlights.slice(
+    (flightPage - 1) * ADMIN_FLIGHT_PAGE_SIZE,
+    flightPage * ADMIN_FLIGHT_PAGE_SIZE,
+  );
+  const visibleSegments = filteredSegments.slice(
+    (segmentPage - 1) * ADMIN_SEGMENT_PAGE_SIZE,
+    segmentPage * ADMIN_SEGMENT_PAGE_SIZE,
+  );
+
+  const updateFlightFilters = (patch: Partial<typeof flightFilters>) => {
+    setFlightFilters((filters) => ({ ...filters, ...patch }));
+    setFlightPage(1);
+  };
+
+  const updateSegmentFilters = (patch: Partial<typeof segmentFilters>) => {
+    setSegmentFilters((filters) => ({ ...filters, ...patch }));
+    setSegmentPage(1);
+  };
 
   useEffect(() => {
     void refreshAll();
   }, []);
+
+  useEffect(() => {
+    setFlightPage((page) => clampPage(page, flightTotalPages));
+  }, [flightTotalPages]);
+
+  useEffect(() => {
+    setSegmentPage((page) => clampPage(page, segmentTotalPages));
+  }, [segmentTotalPages]);
 
   useEffect(() => {
     if (tab !== 'tickets') {
@@ -1354,7 +1421,23 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
           </div>
           <DataTable
             title="航班列表"
-            rows={flights.slice(0, 10).map((flight) => ({
+            tools={(
+              <div className="table-filters">
+                <TextInput label="关键词" value={flightFilters.keyword} onChange={(value) => updateFlightFilters({ keyword: value })} />
+                <label>
+                  日期
+                  <input type="date" value={flightFilters.flightDate} onChange={(event) => updateFlightFilters({ flightDate: event.target.value })} />
+                </label>
+                <SelectInput label="状态" value={flightFilters.flightStatus} options={flightStatusOptions} onChange={(value) => updateFlightFilters({ flightStatus: value as Flight['flightStatus'] | '' })} />
+              </div>
+            )}
+            pagination={{
+              total: filteredFlights.length,
+              page: flightPage,
+              pageSize: ADMIN_FLIGHT_PAGE_SIZE,
+              onPageChange: setFlightPage,
+            }}
+            rows={visibleFlights.map((flight) => ({
               key: String(flight.flightId),
               main: `${flight.flightNumber} · ${flight.departureAirportCode} → ${flight.arrivalAirportCode}`,
               meta: `${flight.flightDate} · ${statusText(flight.flightStatus)}`,
@@ -1423,7 +1506,20 @@ function AdminWorkspace({ notify }: { notify: (message: string, kind?: Toast['ki
           </div>
           <DataTable
             title="航段列表"
-            rows={segments.slice(0, 12).map((segment) => ({
+            tools={(
+              <div className="table-filters">
+                <TextInput label="关键词" value={segmentFilters.keyword} onChange={(value) => updateSegmentFilters({ keyword: value })} />
+                <SelectInput label="所属航班" value={segmentFilters.flightId} options={segmentFlightOptions} onChange={(value) => updateSegmentFilters({ flightId: value })} />
+                <SelectInput label="特价状态" value={segmentFilters.specialOffer} options={specialOfferOptions} onChange={(value) => updateSegmentFilters({ specialOffer: value as typeof segmentFilters.specialOffer })} />
+              </div>
+            )}
+            pagination={{
+              total: filteredSegments.length,
+              page: segmentPage,
+              pageSize: ADMIN_SEGMENT_PAGE_SIZE,
+              onPageChange: setSegmentPage,
+            }}
+            rows={visibleSegments.map((segment) => ({
               key: String(segment.segmentId),
               main: `#${segment.segmentId} ${segment.originAirportCode} → ${segment.destinationAirportCode}`,
               meta: `${formatDateTime(segment.plannedDepartureTime)} · 经济舱 ${segment.economyRemainingSeats}`,
@@ -1598,10 +1694,25 @@ function ResourceCard({
 function DataTable({
   title,
   rows,
+  tools,
+  pagination,
 }: {
   title: string;
   rows: { key: string; main: string; meta: string; action?: React.ReactNode }[];
+  tools?: React.ReactNode;
+  pagination?: { total: number; page: number; pageSize: number; onPageChange: (page: number) => void };
 }) {
+  const totalPages = pagination ? Math.max(1, Math.ceil(pagination.total / pagination.pageSize)) : 1;
+  const [pageInput, setPageInput] = useState('');
+  const jumpPage = () => {
+    if (!pagination) {
+      return;
+    }
+    const nextPage = clampPage(pageInput || pagination.page, totalPages);
+    pagination.onPageChange(nextPage);
+    setPageInput('');
+  };
+
   return (
     <section className="control-panel data-panel">
       <div className="panel-title">
@@ -1611,6 +1722,7 @@ function DataTable({
 
         </div>
       </div>
+      {tools}
       <div className="data-list">
         {rows.map((row) => (
           <div className="data-row" key={row.key}>
@@ -1623,6 +1735,31 @@ function DataTable({
         ))}
         {rows.length === 0 && <p className="small-note">暂无数据。</p>}
       </div>
+      {pagination && (
+        <div className="table-pagination">
+          <span>共 {pagination.total} 条，第 {pagination.page} / {totalPages} 页</span>
+          <div className="pagination-actions">
+            <button className="mini-button ghost" onClick={() => pagination.onPageChange(clampPage(pagination.page - 1, totalPages))} disabled={pagination.page <= 1}>
+              上一页
+            </button>
+            <button className="mini-button ghost" onClick={() => pagination.onPageChange(clampPage(pagination.page + 1, totalPages))} disabled={pagination.page >= totalPages}>
+              下一页
+            </button>
+            <input
+              aria-label={`${title}页码`}
+              value={pageInput}
+              placeholder="页码"
+              onChange={(event) => setPageInput(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  jumpPage();
+                }
+              }}
+            />
+            <button className="mini-button" onClick={jumpPage}>跳转</button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

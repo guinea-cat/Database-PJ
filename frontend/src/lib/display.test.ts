@@ -4,7 +4,10 @@ import {
   airportCodeLabel,
   changeChainText,
   changeTargetPrice,
+  clampPage,
   deductSeatFromFlights,
+  filterAdminFlights,
+  filterAdminSegments,
   filterChangeTargets,
   formatForDateTimeLocal,
   formatMoney,
@@ -225,5 +228,41 @@ describe('display helpers', () => {
       paymentAmount: 100,
       originalTicketId: 1,
     })).toBe('由原订单改签生成：新订单 TS202607010002');
+  });
+});
+
+describe('admin list helpers', () => {
+  it('filters admin flights by keyword date and status', () => {
+    const flights = [
+      { flightId: 49, flightNumber: 'CA3019', flightDate: '2026-07-01', aircraftRegNo: 'B-1', flightStatus: 'NORMAL' as const, departureAirportCode: 'PEK', arrivalAirportCode: 'SHA' },
+      { flightId: 50, flightNumber: 'CA3020', flightDate: '2026-07-01', aircraftRegNo: 'B-2', flightStatus: 'DISABLED' as const, departureAirportCode: 'SHA', arrivalAirportCode: 'PEK' },
+      { flightId: 51, flightNumber: 'MU2001', flightDate: '2026-07-02', aircraftRegNo: 'B-3', flightStatus: 'NORMAL' as const, departureAirportCode: 'CAN', arrivalAirportCode: 'TFU' },
+    ];
+
+    expect(filterAdminFlights(flights, { keyword: 'ca30', flightDate: '2026-07-01', flightStatus: 'NORMAL' }).map((flight) => flight.flightId)).toEqual([49]);
+    expect(filterAdminFlights(flights, { keyword: '50', flightDate: '', flightStatus: '' }).map((flight) => flight.flightId)).toEqual([50]);
+    expect(filterAdminFlights(flights, { keyword: 'tfu', flightDate: '', flightStatus: '' }).map((flight) => flight.flightId)).toEqual([51]);
+  });
+
+  it('filters admin segments by route flight and special offer state', () => {
+    const flights = [
+      { flightId: 49, flightNumber: 'CA3019', flightDate: '2026-07-01', aircraftRegNo: 'B-1', flightStatus: 'NORMAL' as const, departureAirportCode: 'PEK', arrivalAirportCode: 'SHA' },
+      { flightId: 50, flightNumber: 'CA3020', flightDate: '2026-07-01', aircraftRegNo: 'B-2', flightStatus: 'NORMAL' as const, departureAirportCode: 'SHA', arrivalAirportCode: 'PEK' },
+    ];
+    const segments = [
+      { segmentId: 100, flight: flights[0], originStopNo: 1, destinationStopNo: 2, originAirportCode: 'PEK', destinationAirportCode: 'SHA', plannedDepartureTime: '2026-07-01T08:00:00', plannedArrivalTime: '2026-07-01T10:00:00', firstClassRemainingSeats: 1, economyRemainingSeats: 10, firstClassPrice: 1800, economyPrice: 900, isSpecialOffer: true },
+      { segmentId: 101, flight: flights[1], originStopNo: 1, destinationStopNo: 2, originAirportCode: 'SHA', destinationAirportCode: 'PEK', plannedDepartureTime: '2026-07-01T11:00:00', plannedArrivalTime: '2026-07-01T13:00:00', firstClassRemainingSeats: 1, economyRemainingSeats: 10, firstClassPrice: 1800, economyPrice: 900, isSpecialOffer: false },
+    ];
+
+    expect(filterAdminSegments(segments, flights, { keyword: 'ca3019', flightId: '', specialOffer: 'special' }).map((segment) => segment.segmentId)).toEqual([100]);
+    expect(filterAdminSegments(segments, flights, { keyword: '101', flightId: '', specialOffer: 'all' }).map((segment) => segment.segmentId)).toEqual([101]);
+    expect(filterAdminSegments(segments, flights, { keyword: 'pek', flightId: '50', specialOffer: 'regular' }).map((segment) => segment.segmentId)).toEqual([101]);
+  });
+
+  it('clamps page jumps to valid bounds', () => {
+    expect(clampPage(0, 5)).toBe(1);
+    expect(clampPage('8', 5)).toBe(5);
+    expect(clampPage('abc', 5)).toBe(1);
+    expect(clampPage(2, 0)).toBe(1);
   });
 });
