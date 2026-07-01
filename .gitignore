@@ -1,2 +1,40 @@
-仅供部分参考-数据库期中汇报.pdf
-老师评分标准-只看航空票务数据库.pdf
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+attack(1).py
+
+# Node
+frontend/node_modules/
+frontend/tsconfig.tsbuildinfo
+
+# Java / Maven
+backend/target/
+*.jar
+*.war
+
+# Logs
+*.log
+backend/logs/
+
+# Personal AI config
+.claude/
+.agents/
+
+# Redundant archives
+*.zip
+
+# Generated docs/images
+_pdf_read_*/
+*.svg
+ER图（end）.png
+Group_22_数据库项目文档.pdf
+docs/*.pptx
+
+# Personal notes
+其它文档/
+期末汇报安排.txt
+
+# System
+.DS_Store
+Thumbs.db
