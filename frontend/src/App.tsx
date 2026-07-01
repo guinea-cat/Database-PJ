@@ -1537,7 +1537,7 @@ function ResourceCard({
         <BadgeCheck size={20} />
         <div>
           <h2>{title}</h2>
-          <p>变更操作使用 POST</p>
+
         </div>
       </div>
       <div className="form-grid">{children}</div>
@@ -1562,7 +1562,7 @@ function DataTable({
         <Coffee size={20} />
         <div>
           <h2>{title}</h2>
-          <p>查询操作使用 GET</p>
+
         </div>
       </div>
       <div className="data-list">
